@@ -1,0 +1,120 @@
+# --------------------------
+# GENERAL SYSTEM DESCRIPTORS
+# --------------------------
+SystemName  Carbon Dimer
+SystemLabel	C_dimer
+
+# -----------------
+# ATOMS AND SPECIES
+# -----------------
+NumberOfAtoms	 2
+NumberOfSpecies	 1
+%block ChemicalSpeciesLabel
+ 1  6  C            # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+# ----------------
+# BASIS DEFINITION
+# ----------------
+#PAO.EnergyShift   10 meV
+#PAO.Splitnorm     0.15
+#PAO.SplitnormH    0.5
+
+#%block PAO.Basis
+#C  2
+# n=3   0   2  
+#   0.0   0.0
+# n=2   1   2 
+#   0.0
+# n=2   0   2 
+#   0.0   0.0 
+#%endblock PAO.Basis
+
+# ----------------------
+# STRUCTURAL INFORMATION
+# ----------------------
+LatticeConstant     1.0 Ang
+%block LatticeVectors
+   20.000000    0.000000    0.000000
+    0.000000   20.000000    0.000000
+    0.000000    0.000000   20.000000
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat Ang
+%block AtomicCoordinatesAndAtomicSpecies
+    0.000000     0.000000     0.000000   1
+    3.000000     0.000000     0.000000   1
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+# ----
+# SPIN
+# ----
+# Spin                polarized
+# %block DM.InitSpin
+#  1   1.
+#  2   -1.
+# %endblock DM.InitSpin
+
+# --
+# XC
+# --
+xc.functional	        GGA	
+xc.authors		PBE	
+
+# ----
+# GRID
+# ----
+MeshCutoff 		300. Ry
+
+%block kgrid_Monkhorst_Pack 
+   1    0    0   0
+   0    1    0   0
+   0    0    1   0
+%endblock kgrid_Monkhorst_Pack
+
+# ---------------
+# Solution Method
+# ---------------
+SolutionMethod		diagon
+ElectronicTemperature	0.1 K	
+
+# ---
+# SCF
+# ---
+SCF.DM.Tolerance         5.E-6
+SCF.H.Tolerance          5.E-5 eV
+SCF.Mix                  Hamiltonian
+# SCF.Mix.Spin             all
+SCF.Mixer.Method         Pulay
+SCF.Mixer.Weight         0.15
+SCF.Mixer.Kick           10
+SCF.Mixer.History        20
+MaxSCFIterations	     200
+DM.UseSaveDM	     	 T
+SaveHS                   T
+
+# --
+# MD
+# --
+MD.TypeOfRun   	        CG  
+MD.Steps                100
+MD.MaxCGDispl           0.02 Ang
+MD.UseSaveXV            T
+MD.MaxForceTol          0.0001 eV/Ang
+MD.MaxStressTol         0.0001 GPa
+MD.TargetPressure       0.0001 GPa
+
+# --------------
+# OUTPUT OPTIONS
+# --------------
+WriteEigenvalues       F
+WriteForces            T
+WriteCoorStep          T
+WriteCoorXmol          T
+WriteMullikenPop       1
+Write.HirshfeldPop     T
+Write.VoronoiPop       T
+
+
+Write.DM.NetCDF        T
+Write.DMHS.NetCDF      T

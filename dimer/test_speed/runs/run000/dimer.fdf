@@ -1,0 +1,52 @@
+#DON'T FORGET TO PUT THE .PSF FILE TO THE SAME DIRECTORY
+
+SystemName          Dimer of Carbon                     # Name of the system we want to investigate
+SystemLabel         dimer                            # name of output files
+NumberOfAtoms       2                                # how many number in the unit cell? Dimer -> 2 atoms
+NumberOfSpecies     1                                # how many different type of atoms? Dimer -> 1
+
+%block ChemicalSpeciesLabel 
+ 1  6  C        # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+# ----------------------
+# STRUCTURAL INFORMATION
+# ----------------------
+LatticeConstant     1.0 Ang
+%block LatticeVectors
+   7.000000    0.000000    0.000000
+    0.000000   7.000000    0.000000
+    0.000000    0.000000   7.000000
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat Ang
+%block AtomicCoordinatesAndAtomicSpecies
+    0.000000     0.000000     0.000000   1
+    2.000000     0.000000     0.000000   1
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+# --
+# XC
+# --
+xc.functional	        GGA	
+xc.authors		PBE	
+
+# ----
+# GRID
+# ----
+# MeshCutoff 		300. Ry
+
+# ---------------
+# Solution Method
+# ---------------
+SolutionMethod		diagon
+ElectronicTemperature	0.1 K	
+
+SCF.Mixer.History         20   
+SCF.Mixer.Weight         0.1500000000         
+SCF.DM.Tolerance         5E-6    # default value
+SCF.H.Tolerance          5E-5 eV # default value
+
+
+
+

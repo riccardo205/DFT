@@ -1,0 +1,695 @@
+Executable      : siesta
+Version         : 5.2.2
+Architecture    : x86_64
+Compiler version: GNU-13.3.0
+Compiler flags  : -march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -isystem <prefix>/include -I<prefix>/_build_env/include -fdebug-prefix-map=<prefix>/work=/usr/local/src/conda/siesta-5.2.2 -fdebug-prefix-map=<prefix>=/usr/local/src/conda-prefix -I<prefix>/lib -fallow-argument-mismatch -O3
+Parallelisations: none
+NetCDF support
+NetCDF-4 support
+Lua support
+DFT-D3 support
+
+Runtime information:
+* Directory : /v/rconte1/dimer/test
+* Running in serial mode.
+>> Start of run:  27-MAR-2025  17:12:12
+
+                           *********************** 
+                           *  WELCOME TO SIESTA  * 
+                           *********************** 
+
+ NOTE: Siesta V5 introduces some new defaults for basis-set generation
+ NOTE: which might lead to slightly different numerical results.
+ NOTE: Please see the manual for full details and compatibility measures.
+
+
+reinit: Reading from file C-dimer.fdf
+
+reinit: -----------------------------------------------------------------------
+reinit: System Name: Carbon Dimer
+reinit: -----------------------------------------------------------------------
+reinit: System Label: C_dimer
+reinit: -----------------------------------------------------------------------
+
+initatom: Reading input for the pseudopotentials and atomic orbitals ----------
+Species number:   1 Atomic number:    6 Label: C
+
+Ground state valence configuration (from tables):   2s02  2p02  3d00  4f00
+
+---- Processing specs for species: C
+Reading pseudopotential information in formatted form from:
+  C.psf
+
+---- Pseudopotential check for  C
+
+Pseudized shells:
+2s( 2.00) rc: 1.56
+2p( 2.00) rc: 1.56
+3d( 0.00) rc: 1.56
+4f( 0.00) rc: 1.56
+Valence configuration for ps generation: (assumed as above)
+For C, standard SIESTA heuristics set lmxkb to 3
+ (one more than the basis l, including polarization orbitals).
+Use PS.lmax or PS.KBprojectors blocks to override.
+
+<basis_specs>
+===============================================================================
+C                    Z=   6    Mass=  12.011        Charge= 0.17977+309
+Lmxo=2 Lmxkb= 3    BasisType=split      Semic=F
+L=0  Nsemic=0  Cnfigmx=2
+          i=1  nzeta=2  polorb=0  (2s)
+            splnorm:   0.15000    
+               vcte:    40.000    
+               rinn:  -0.90000    
+               qcoe:    0.0000    
+               qyuk:    0.0000    
+               qwid:   0.10000E-01
+                rcs:    0.0000      0.0000    
+            lambdas:    1.0000      1.0000    
+L=1  Nsemic=0  Cnfigmx=2
+          i=1  nzeta=2  polorb=1  (2p)  (to be polarized perturbatively)
+            splnorm:   0.15000    
+               vcte:    40.000    
+               rinn:  -0.90000    
+               qcoe:    0.0000    
+               qyuk:    0.0000    
+               qwid:   0.10000E-01
+                rcs:    0.0000      0.0000    
+            lambdas:    1.0000      1.0000    
+L=2  Nsemic=0  Cnfigmx=3
+          i=1  nzeta=0  polorb=0  (3d)  (perturbative polarization orbital) (from 2p)
+-------------------------------------------------------------------------------
+L=0  Nkbl=1  erefs: 0.17977+309
+L=1  Nkbl=1  erefs: 0.17977+309
+L=2  Nkbl=1  erefs: 0.17977+309
+L=3  Nkbl=1  erefs: 0.17977+309
+===============================================================================
+</basis_specs>
+
+Using PAO.SplitTailNorm
+atom: Called for C                     (Z =   6)
+Maximum radius (at nrval) set to   50.00000 8518
+
+read_vps: Pseudopotential generation method:
+read_vps: ATM 3.2.2 Troullier-Martins                       
+Valence charge in pseudo generation:    4.00000
+
+xc_check: Exchange-correlation functional:
+xc_check: GGA Perdew, Burke & Ernzerhof 1996
+V l=0 = -2*Zval/r beyond r=  1.5347
+V l=1 = -2*Zval/r beyond r=  1.5332
+V l=2 = -2*Zval/r beyond r=  1.5347
+V l=3 = -2*Zval/r beyond r=  1.5347
+All V_l potentials equal beyond r=  1.4890
+This should be close to max(r_c) in ps generation
+All pots = -2*Zval/r beyond r=  1.5347
+Using small-core scheme (local charge) for Vlocal
+
+VLOCAL_FROM_CHLOCAL: 99.0% of the norm of Vloc inside     19.577 Ry
+VLOCAL_FROM_CHLOCAL: 99.9% of the norm of Vloc inside     44.617 Ry
+atom: Maximum radius for chlocal:    1.77931
+atom: Maximum radius for r*vlocal+2*Zval:    1.63022
+
+KBgen: Kleinman-Bylander projectors: 
+GHOST: No ghost state for L =  0
+   l= 0   rc=  1.646704   el= -1.010689   Ekb=  5.277734   kbcos=  0.315993
+GHOST: No ghost state for L =  1
+   l= 1   rc=  1.648361   el= -0.388490   Ekb= -4.115733   kbcos= -0.351483
+GHOST: No ghost state for L =  2
+   l= 2   rc=  1.735131   el=  0.012917   Ekb= -1.012311   kbcos= -0.009283
+GHOST: No ghost state for L =  3
+   l= 3   rc=  1.777521   el=  0.019225   Ekb= -0.424772   kbcos= -0.001204
+
+KBgen: Total number of Kleinman-Bylander projectors:  16
+atom: -------------------------------------------------------------------------
+
+atom: SANKEY-TYPE ORBITALS:
+atom: Selected multiple-zeta basis: split     
+
+SPLIT: Orbitals with angular momentum L= 0
+
+SPLIT: Basis orbitals for state 2s
+
+SPLIT: PAO cut-off radius determined from an
+SPLIT: energy shift=  0.010000 Ry
+Split based on tail norm
+
+   izeta = 1
+                 lambda =    1.000000
+                     rc =    4.484389
+                 energy =   -0.999400
+                kinetic =    0.879719
+    potential(screened) =   -1.879119
+       potential(ionic) =   -5.474723
+
+   izeta = 2
+                 rmatch =    3.048210
+              splitnorm =    0.150000
+                 energy =   -0.737057
+                kinetic =    1.553917
+    potential(screened) =   -2.290974
+       potential(ionic) =   -6.191799
+
+SPLIT: Orbitals with angular momentum L= 1
+
+SPLIT: Basis orbitals for state 2p
+
+SPLIT: PAO cut-off radius determined from an
+SPLIT: energy shift=  0.010000 Ry
+Split based on tail norm
+
+   izeta = 1
+                 lambda =    1.000000
+                     rc =    5.435719
+                 energy =   -0.377283
+                kinetic =    2.459011
+    potential(screened) =   -2.836294
+       potential(ionic) =   -6.303833
+
+   izeta = 2
+                 rmatch =    3.691839
+              splitnorm =    0.150000
+                 energy =   -0.247686
+                kinetic =    3.567780
+    potential(screened) =   -3.815466
+       potential(ionic) =   -7.634895
+
+POLgen: Perturbative polarization orbital with L=  2
+
+POLgen: Polarization orbital for state 2p
+Split based on tail norm
+
+   izeta = 1
+                     rc =    5.435719
+                 energy =    1.173953
+                kinetic =    2.358612
+    potential(screened) =   -1.184659
+       potential(ionic) =   -4.054396
+atom: Total number of Sankey-type orbitals: 13
+
+atm_pop: Valence configuration (for local Pseudopot. screening):
+ 2s( 2.00)                                                            
+ 2p( 2.00)                                                            
+ 3d( 0.00)                                                            
+Vna: chval, zval:    4.00000   4.00000
+
+Vna:  Cut-off radius for the neutral-atom potential:   5.435719
+
+atom: _________________________________________________________________________
+
+prinput: Basis input 
+
+PAO.BasisType split     
+
+%block ChemicalSpeciesLabel
+    1    6 C                       # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+%block PAO.Basis                 # Define Basis set
+# WARNING: This information might be incomplete!
+C                     2                    # Species label, number of l-shells
+ n=2   0   2                         # n, l, Nzeta 
+   4.484      3.048   
+   1.000      1.000   
+ n=2   1   2 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   5.436      3.692   
+   1.000      1.000   
+%endblock PAO.Basis
+
+prinput: ----------------------------------------------------------------------
+
+Dumping basis to NetCDF file C.ion.nc
+coor:   Atomic-coordinates input format  =     Cartesian coordinates
+coor:                                          (in Angstroms)
+
+siesta: WARNING: XV file not found
+
+siesta: Atomic coordinates (Bohr) and species
+siesta:      0.00000   0.00000   0.00000  1        1
+siesta:      5.66918   0.00000   0.00000  1        2
+
+siesta: System type = molecule  
+
+initatomlists: Number of atoms, orbitals, and projectors:      2    26    32
+
+coxmol: Writing XMOL coordinates into file C_dimer.xyz                                                                                                                                                                                                                         
+
+siesta: ******************** Simulation parameters ****************************
+siesta:
+siesta: The following are some of the parameters of the simulation.
+siesta: A complete list of the parameters used, including default values,
+siesta: can be found in file out.fdf
+siesta:
+redata: Spin configuration                          = none
+redata: Number of spin components                   = 1
+redata: Time-Reversal Symmetry                      = T
+redata: Spin spiral                                 = F
+redata: Long output                                 =   F
+redata: Number of Atomic Species                    =        1
+redata: Charge density info will appear in .RHO file
+redata: Write Mulliken charges (when)               = geometry+end
+redata: Write Mulliken Pop.                         = Atomic and Orbital charges
+redata: Write Hirshfeld charges (when)              = end
+redata: Write Voronoi charges (when)                = end
+redata: Write spin charge (when)                    = none
+redata: Matel table size (NRTAB)                    =     1024
+redata: Mesh Cutoff                                 =   300.0000 Ry
+redata: Net charge of the system                    =     0.0000 |e|
+redata: Min. number of SCF Iter                     =        0
+redata: Max. number of SCF Iter                     =      200
+redata: SCF convergence failure will abort job
+redata: SCF mix quantity                            = Hamiltonian
+redata: Mix DM or H after convergence               =   F
+redata: Recompute H after scf cycle                 =   F
+redata: Mix DM in first SCF step                    =   T
+redata: Write Pulay info on disk                    =   F
+redata: New DM Occupancy tolerance                  = 0.000000000001
+redata: No kicks to SCF
+redata: DM Mixing Weight for Kicks                  =     0.5000
+redata: Require Harris convergence for SCF          =   F
+redata: Harris energy tolerance for SCF             =     0.000100 eV
+redata: Require DM convergence for SCF              =   T
+redata: DM tolerance for SCF                        =     0.000005
+redata: Require EDM convergence for SCF             =   F
+redata: EDM tolerance for SCF                       =     0.001000 eV
+redata: Require H convergence for SCF               =   T
+redata: Hamiltonian tolerance for SCF               =     0.000050 eV
+redata: Require (free) Energy convergence for SCF   =   F
+redata: (free) Energy tolerance for SCF             =     0.000100 eV
+redata: Using DFT-D3 dispersion                     =   F
+redata: Using Saved Data (generic)                  =   F
+redata: Use continuation files for DM               =   T
+redata: Neglect nonoverlap interactions             =   F
+redata: Method of Calculation                       = Diagonalization
+redata: Electronic Temperature                      =     0.1000 K
+redata: Fix the spin of the system                  =   F
+redata: Max. number of TDED Iter                    =        1
+redata: Number of TDED substeps                     =        3
+redata: Dynamics option                             = CG coord. optimization
+redata: Variable cell                               =   F
+redata: Use continuation files for CG               =   F
+redata: Max atomic displ per move                   =     0.0200 Ang
+redata: Maximum number of optimization moves        =      100
+redata: Force tolerance                             =     0.0001 eV/Ang
+mix.SCF: Pulay mixing                            = Pulay
+mix.SCF:    Variant                              = stable
+mix.SCF:    History steps                        = 9
+mix.SCF:    Linear mixing weight                 =     0.150000
+mix.SCF:    Mixing weight                        =     0.150000
+mix.SCF:    SVD condition                        = 0.1000E-07
+mix.SCF:    Restart steps                        = 9
+mix.SCF:    Restart save steps                   = 1
+mix.SCF:    Number of mixing iterations          = 9
+mix.SCF:    Following mixer                      = Linear-Kick
+mix.SCF: Linear mixing                           = Linear-Kick
+mix.SCF:    Mixing weight                        =     0.500000
+mix.SCF:    Number of mixing iterations          = 1
+mix.SCF:    Following mixer                      = Pulay
+redata: Save all siesta data in one NC              =   F
+redata: ***********************************************************************
+
+%block SCF.Mixers
+  Pulay
+  Linear-Kick
+%endblock SCF.Mixers
+
+%block SCF.Mixer.Pulay
+  # Mixing method
+  method pulay
+  variant stable
+
+  # Mixing options
+  weight 0.1500
+  weight.linear 0.1500
+  history 9
+  restart 9
+  restart.save 1
+
+  # Continuation options
+  iterations 9
+  next Linear-Kick
+%endblock SCF.Mixer.Pulay
+
+%block SCF.Mixer.Linear-Kick
+  # Mixing method
+  method linear
+
+  # Mixing options
+  weight 0.5000
+
+  # Continuation options
+  iterations 1
+  next Pulay
+%endblock SCF.Mixer.Linear-Kick
+
+DM_history_depth set to one: no extrapolation allowed by default for geometry relaxation
+Size of DM history Fstack: 1
+Total number of electrons:     8.000000
+Total ionic charge:     8.000000
+ Kpoints in:            1 . Kpoints trimmed:            1
+
+siesta: k-grid: Number of k-points = 1
+siesta: k-points from Monkhorst-Pack grid
+siesta: k-cutoff (effective) =    10.000 Ang
+siesta: k-point supercell and displacements
+siesta: k-grid:     1     0     0      0.000
+siesta: k-grid:     0     1     0      0.000
+siesta: k-grid:     0     0     1      0.000
+
+diag: Algorithm                                     = D&C
+diag: Used triangular part                          = Lower
+diag: Absolute tolerance                            =  0.100E-15
+diag: Orthogonalization factor                      =  0.100E-05
+diag: Memory factor                                 =  1.0000
+
+
+ts: **************************************************************
+ts: Save H and S matrices                           =    F
+ts: Save DM and EDM matrices                        =    F
+ts: Only save the overlap matrix S                  =    F
+ts: **************************************************************
+
+************************ Begin: TS CHECKS AND WARNINGS ************************
+************************ End: TS CHECKS AND WARNINGS **************************
+
+
+                     ====================================
+                        Begin CG opt. move =      0
+                     ====================================
+
+outcoor: Atomic coordinates (Ang):                          
+    0.00000000    0.00000000    0.00000000   1       1  C
+    3.00000000    0.00000000    0.00000000   1       2  C
+
+outcell: Unit cell vectors (Ang):
+       20.000000    0.000000    0.000000
+        0.000000   20.000000    0.000000
+        0.000000    0.000000   20.000000
+
+outcell: Cell vector modules (Ang)   :   20.000000   20.000000   20.000000
+outcell: Cell angles (23,13,12) (deg):     90.0000     90.0000     90.0000
+outcell: Cell volume (Ang**3)        :   8000.0000
+<dSpData1D:S at geom step 0
+  <sparsity:sparsity for geom step 0
+    nrows_g=26 nrows=26 sparsity=1.0000 nnzs=676, refcount: 7>
+  <dData1D:(new from dSpData1D) n=676, refcount: 1>
+refcount: 1>
+new_DM -- step:     1
+Initializing Density Matrix...
+
+Attempting to read DM from file... Failed...
+DM filled with atomic data:
+<dSpData2D:DM initialized from atoms
+  <sparsity:sparsity for geom step 0
+    nrows_g=26 nrows=26 sparsity=1.0000 nnzs=676, refcount: 8>
+  <dData2D:DM n=676 m=1, refcount: 1>
+refcount: 1>
+No. of atoms with KB's overlaping orbs in proc 0. Max # of overlaps:       2      22
+
+InitMesh: MESH = 216 x 216 x 216 = 10077696
+InitMesh: Mesh cutoff (required, used) =   300.000   322.366 Ry
+New grid distribution [1]: sub = 2
+
+stepf: Fermi-Dirac step function
+
+siesta: Program's energy decomposition (eV):
+siesta: Ebs     =       -73.537208
+siesta: Eions   =       522.735435
+siesta: Ena     =       129.934628
+siesta: Ekin    =       165.838171
+siesta: Enl     =         2.960703
+siesta: Eso     =         0.000000
+siesta: Edftu   =         0.000000
+siesta: DEna    =         8.400112
+siesta: DUscf   =         0.592245
+siesta: DUext   =         0.000000
+siesta: Ex      =       -70.945878
+siesta: Ec      =        -6.413501
+siesta: Exc     =       -77.359379
+siesta: EbV     =         0.000000
+siesta: eta*DQ  =         0.000000
+siesta: Emadel  =         0.000000
+siesta: Emeta   =         0.000000
+siesta: Emolmec =         0.000000
+siesta: Ekinion =         0.000000
+siesta: Eharris =      -293.842296
+siesta: Etot    =      -292.368954
+siesta: FreeEng =      -292.368978
+
+        iscf     Eharris(eV)        E_KS(eV)     FreeEng(eV)     dDmax    Ef(eV) dHmax(eV)
+   scf:    1     -293.842296     -292.368954     -292.368978  1.038969 -4.169562  1.126045
+timer: Routine,Calls,Time,% = IterSCF        1       2.096  31.11
+   scf:    2     -292.407215     -292.388479     -292.388503  0.022861 -4.295870  0.873236
+   scf:    3     -292.423724     -292.412963     -292.412987  0.079766 -4.709234  0.303565
+   scf:    4     -292.058731     -292.286331     -292.286331  0.591427 -4.709839  0.214642
+   scf:    5     -291.852692     -292.286071     -292.286071  1.111159 -4.703038  0.208827
+   scf:    6     -292.285997     -292.286067     -292.286067  0.008033 -4.663994  0.171117
+   scf:    7     -291.850370     -292.285359     -292.285359  1.118833 -4.620848  0.175992
+   scf:    8     -292.285647     -292.285519     -292.285519  0.002619 -4.624192  0.173782
+   scf:    9     -292.286319     -292.285934     -292.285934  0.005529 -4.626470  0.168654
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   10     -292.286062     -292.286017     -292.286017  0.010276 -4.631202  0.167313
+mix: switching mixer --> Pulay
+   scf:   11     -291.830621     -292.279069     -292.279069  1.129161 -4.605365  0.275528
+   scf:   12     -292.245612     -292.272721     -292.272721  0.043062 -4.647099  0.500577
+   scf:   13     -292.285153     -292.284719     -292.284719  0.030715 -4.626283  0.187764
+   scf:   14     -292.286806     -292.285770     -292.285770  0.006449 -4.626291  0.171772
+   scf:   15     -292.284575     -292.285205     -292.285205  0.013327 -4.626233  0.180519
+   scf:   16     -291.845165     -292.283993     -292.283993  1.116925 -4.646187  0.198164
+   scf:   17     -292.285765     -292.284921     -292.284921  0.015150 -4.625542  0.184106
+   scf:   18     -292.283230     -292.284195     -292.284195  0.025747 -4.646511  0.195406
+   scf:   19     -292.284425     -292.284312     -292.284312  0.003293 -4.646473  0.193781
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   20     -292.286899     -292.285610     -292.285610  0.004867 -4.625960  0.174084
+mix: switching mixer --> Pulay
+   scf:   21     -291.834209     -292.280381     -292.280381  1.122829 -4.605441  0.239534
+   scf:   22     -292.276059     -292.281358     -292.281358  0.024779 -4.626022  0.325905
+   scf:   23     -292.285750     -292.285504     -292.285504  0.017914 -4.625994  0.175777
+   scf:   24     -291.846752     -292.284622     -292.284622  1.116567 -4.625878  0.189166
+   scf:   25     -292.286181     -292.285402     -292.285402  0.000794 -4.625956  0.177306
+   scf:   26     -291.848915     -292.285342     -292.285342  1.116095 -4.626049  0.178295
+   scf:   27     -292.346948     -292.317254     -292.317263  0.083085 -4.629782  0.151672
+   scf:   28     -292.253698     -292.286280     -292.286280  0.082561 -4.629822  0.163273
+   scf:   29     -291.852293     -292.286142     -292.286142  1.115921 -4.631261  0.165456
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   30     -292.286401     -292.286272     -292.286272  0.001656 -4.629656  0.163286
+mix: switching mixer --> Pulay
+   scf:   31     -291.833349     -292.279865     -292.279865  1.123720 -4.605348  0.244812
+   scf:   32     -292.274229     -292.280332     -292.280332  0.025000 -4.646867  0.335027
+   scf:   33     -292.284800     -292.284532     -292.284532  0.017992 -4.646845  0.190321
+   scf:   34     -292.286478     -292.285506     -292.285506  0.000990 -4.626061  0.175778
+   scf:   35     -292.286024     -292.285766     -292.285766  0.002129 -4.625994  0.171679
+   scf:   36     -292.286390     -292.286082     -292.286082  0.004413 -4.631110  0.166579
+   scf:   37     -292.286088     -292.286105     -292.286105  0.010666 -4.631104  0.166201
+   scf:   38     -291.944651     -292.286155     -292.286155  0.875534 -4.631073  0.157883
+   scf:   39     -291.986812     -292.286061     -292.286061  0.862584 -4.628507  0.161414
+mix: Pulay -- inversion failed, > SVD [rank/size] 6 / 8
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   40     -291.815216     -292.271725     -292.271725  1.111257 -4.603813  0.329427
+mix: switching mixer --> Pulay
+   scf:   41     -291.773943     -292.262263     -292.262263  1.157745 -4.633062  0.659705
+   scf:   42     -291.850983     -292.284772     -292.284772  1.144542 -4.625920  0.181219
+   scf:   43     -292.286509     -292.285643     -292.285643  0.002894 -4.625937  0.168074
+   scf:   44     -291.845761     -292.284408     -292.284408  1.092331 -4.646639  0.186515
+   scf:   45     -292.278915     -292.281665     -292.281665  0.002960 -4.605324  0.221300
+   scf:   46     -292.281395     -292.281530     -292.281530  0.000106 -4.605267  0.222862
+   scf:   47     -292.286683     -292.284109     -292.284109  0.002203 -4.647142  0.190546
+   scf:   48     -292.287173     -292.285642     -292.285642  0.001527 -4.626057  0.168086
+mix: Pulay -- inversion failed, > SVD [rank/size] 7 / 8
+   scf:   49     -292.285931     -292.285787     -292.285787  0.001842 -4.626032  0.165951
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   50     -292.286241     -292.286029     -292.286029  0.009077 -4.631178  0.161273
+mix: switching mixer --> Pulay
+   scf:   51     -291.833482     -292.280153     -292.280153  1.090460 -4.605351  0.238717
+   scf:   52     -292.286902     -292.283888     -292.283888  0.008474 -4.646837  0.193109
+   scf:   53     -292.284830     -292.284574     -292.284574  0.005858 -4.626071  0.183645
+   scf:   54     -291.869390     -292.286198     -292.286198  0.993671 -4.629739  0.131299
+   scf:   55     -291.867964     -292.285711     -292.285711  0.992732 -4.626033  0.166359
+   scf:   56     -292.285026     -292.285375     -292.285375  0.005960 -4.626093  0.172122
+   scf:   57     -292.285987     -292.285803     -292.285803  0.025691 -4.625991  0.163051
+   scf:   58     -292.286005     -292.285960     -292.285960  0.017420 -4.631139  0.158778
+   scf:   59     -292.285991     -292.285976     -292.285976  0.001189 -4.631135  0.158410
+mix: Pulay -- inversion failed, > SVD [rank/size] 6 / 8
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   60     -291.823711     -292.276228     -292.276228  1.085841 -4.604036  0.278209
+mix: switching mixer --> Pulay
+   scf:   61     -291.834453     -292.282047     -292.282047  1.107502 -4.627252  0.293256
+   scf:   62     -291.847402     -292.284025     -292.284025  1.092972 -4.625890  0.199131
+   scf:   63     -292.285633     -292.285312     -292.285312  0.009778 -4.625710  0.168235
+   scf:   64     -292.286352     -292.285863     -292.285863  0.008383 -4.631061  0.160784
+   scf:   65     -291.849154     -292.285453     -292.285453  1.072147 -4.626051  0.168054
+   scf:   66     -292.284856     -292.285162     -292.285162  0.006372 -4.626098  0.171779
+   scf:   67     -292.284513     -292.284847     -292.284847  0.001616 -4.626196  0.175967
+   scf:   68     -292.286519     -292.285691     -292.285691  0.006142 -4.625955  0.162673
+   scf:   69     -292.286082     -292.285903     -292.285903  0.009273 -4.631128  0.160368
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   70     -291.854226     -292.286175     -292.286175  1.088606 -4.629759  0.162694
+mix: switching mixer --> Pulay
+   scf:   71     -291.833299     -292.279966     -292.279966  1.112701 -4.605330  0.244901
+   scf:   72     -291.764461     -292.256742     -292.256742  1.143304 -4.605316  0.687297
+   scf:   73     -292.267859     -292.277627     -292.277627  0.051227 -4.605297  0.260679
+   scf:   74     -292.290791     -292.284689     -292.284689  0.029918 -4.626039  0.179940
+   scf:   75     -291.878915     -292.286096     -292.286096  1.080203 -4.629876  0.158837
+   scf:   76     -292.278289     -292.286016     -292.286016  0.145643 -4.631186  0.167605
+   scf:   77     -292.285822     -292.285952     -292.285952  0.013738 -4.631189  0.168513
+   scf:   78     -292.285959     -292.285956     -292.285956  0.002390 -4.631191  0.168482
+   scf:   79     -292.065524     -292.292163     -292.292165  0.585118 -4.629657  0.184449
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   80     -292.074820     -292.286041     -292.286041  0.554817 -4.630927  0.167078
+mix: switching mixer --> Pulay
+   scf:   81     -291.834653     -292.280377     -292.280377  1.119127 -4.605409  0.244111
+   scf:   82     -292.213199     -292.284921     -292.284921  0.426528 -4.626409  0.157834
+   scf:   83     -292.051473     -292.283326     -292.283326  0.813961 -4.626474  0.229224
+   scf:   84     -292.278835     -292.285402     -292.285402  0.104380 -4.626434  0.161360
+   scf:   85     -292.024199     -292.285468     -292.285468  0.843199 -4.626365  0.156542
+   scf:   86     -291.857555     -292.282396     -292.282396  1.061324 -4.605729  0.218035
+   scf:   87     -292.286892     -292.284746     -292.284746  0.023619 -4.626389  0.186952
+   scf:   88     -291.851855     -292.285516     -292.285516  1.108010 -4.626276  0.172039
+   scf:   89     -292.155129     -292.286348     -292.286348  0.445063 -4.631474  0.186275
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:   90     -292.129732     -292.284014     -292.284014  0.497822 -4.646971  0.197268
+mix: switching mixer --> Pulay
+   scf:   91     -291.834519     -292.280969     -292.280969  1.121250 -4.605654  0.235693
+   scf:   92     -292.207914     -292.278965     -292.278965  0.373184 -4.626262  0.350341
+   scf:   93     -292.266613     -292.282001     -292.282001  0.049930 -4.626232  0.272906
+   scf:   94     -292.044154     -292.285516     -292.285516  0.834825 -4.626112  0.144521
+   scf:   95     -291.923071     -292.285288     -292.285288  1.003398 -4.626183  0.171185
+   scf:   96     -291.848682     -292.283555     -292.283555  1.099491 -4.605245  0.204798
+   scf:   97     -292.283882     -292.285642     -292.285642  0.103391 -4.626107  0.170921
+   scf:   98     -291.991550     -292.286253     -292.286253  0.827105 -4.630022  0.165924
+   scf:   99     -291.868628     -292.285551     -292.285551  0.822649 -4.626058  0.138836
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  100     -292.283683     -292.285600     -292.285600  0.056579 -4.626022  0.141673
+mix: switching mixer --> Pulay
+   scf:  101     -291.831278     -292.279226     -292.279226  0.804037 -4.605352  0.231495
+   scf:  102     -292.239196     -292.271151     -292.271151  0.056915 -4.626127  0.499581
+   scf:  103     -292.285147     -292.284912     -292.284912  0.029678 -4.626065  0.141615
+   scf:  104     -291.850259     -292.285415     -292.285415  0.798975 -4.626022  0.149256
+   scf:  105     -291.843232     -292.283238     -292.283238  0.800630 -4.605373  0.169233
+   scf:  106     -291.845023     -292.284371     -292.284371  0.800234 -4.646970  0.153947
+   scf:  107     -292.286927     -292.285757     -292.285757  0.018530 -4.626280  0.130461
+   scf:  108     -291.851468     -292.285647     -292.285647  0.809152 -4.626212  0.143318
+   scf:  109     -292.285662     -292.285655     -292.285655  0.000243 -4.626208  0.143135
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  110     -291.854602     -292.286132     -292.286132  0.835710 -4.629755  0.131070
+mix: switching mixer --> Pulay
+   scf:  111     -291.831859     -292.279275     -292.279275  0.901829 -4.605215  0.222807
+   scf:  112     -291.799535     -292.267152     -292.267152  0.895891 -4.605538  0.547072
+   scf:  113     -292.270756     -292.280280     -292.280280  0.046268 -4.605645  0.196044
+   scf:  114     -292.289166     -292.285633     -292.285633  0.046431 -4.626172  0.143755
+   scf:  115     -292.286485     -292.286231     -292.286231  0.022553 -4.629985  0.127925
+   scf:  116     -292.280503     -292.283441     -292.283441  0.014956 -4.605612  0.155988
+   scf:  117     -291.845404     -292.284322     -292.284322  0.825622 -4.646113  0.155610
+   scf:  118     -292.284993     -292.284693     -292.284693  0.006317 -4.625645  0.149382
+   scf:  119     -292.284599     -292.284646     -292.284646  0.000177 -4.625629  0.149977
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  120     -292.283820     -292.284257     -292.284257  0.008344 -4.646533  0.151079
+mix: switching mixer --> Pulay
+   scf:  121     -291.777289     -292.262068     -292.262068  0.861201 -4.605588  0.599137
+   scf:  122     -292.158661     -292.257237     -292.257237  0.078718 -4.625916  0.683344
+   scf:  123     -292.286465     -292.285917     -292.285917  0.042092 -4.625852  0.131595
+   scf:  124     -291.845874     -292.284025     -292.284025  0.825349 -4.646471  0.153258
+   scf:  125     -292.285908     -292.284967     -292.284967  0.001042 -4.625782  0.142764
+   scf:  126     -291.849445     -292.285433     -292.285433  0.826176 -4.625899  0.137003
+   scf:  127     -292.284630     -292.285043     -292.285043  0.006010 -4.626137  0.143959
+   scf:  128     -292.287079     -292.286081     -292.286081  0.008125 -4.631122  0.128046
+   scf:  129     -292.286303     -292.286216     -292.286216  0.008538 -4.629838  0.129359
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  130     -291.853823     -292.285948     -292.285948  0.810318 -4.630985  0.149969
+mix: switching mixer --> Pulay
+   scf:  131     -291.774257     -292.260552     -292.260552  0.870951 -4.605370  0.596194
+   scf:  132     -291.852263     -292.283474     -292.283474  0.829699 -4.625917  0.200535
+   scf:  133     -292.284815     -292.285082     -292.285082  0.020757 -4.625906  0.148228
+   scf:  134     -292.286224     -292.285816     -292.285816  0.021132 -4.625907  0.131453
+   scf:  135     -292.285814     -292.285906     -292.285906  0.016697 -4.625896  0.136462
+   scf:  136     -292.284779     -292.285344     -292.285344  0.002111 -4.625930  0.144549
+   scf:  137     -292.286356     -292.285851     -292.285851  0.001680 -4.625817  0.137416
+   scf:  138     -292.286594     -292.286247     -292.286247  0.008494 -4.629636  0.135071
+   scf:  139     -292.286238     -292.286269     -292.286269  0.008809 -4.629630  0.131624
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  140     -291.813403     -292.272294     -292.272294  0.808529 -4.604027  0.258848
+mix: switching mixer --> Pulay
+   scf:  141     -291.619135     -292.211718     -292.211718  0.878417 -4.628255  1.064738
+   scf:  142     -291.853382     -292.284693     -292.284693  0.878625 -4.625769  0.150703
+   scf:  143     -292.286514     -292.285623     -292.285623  0.003352 -4.625772  0.140055
+   scf:  144     -292.286656     -292.286143     -292.286143  0.002900 -4.629663  0.132303
+   scf:  145     -291.852466     -292.286047     -292.286047  0.807813 -4.630946  0.132585
+   scf:  146     -292.285121     -292.285592     -292.285592  0.004866 -4.625749  0.140191
+   scf:  147     -292.284619     -292.285106     -292.285106  0.000578 -4.625789  0.146042
+   scf:  148     -292.284820     -292.284963     -292.284963  0.000445 -4.625839  0.147626
+   scf:  149     -292.283130     -292.284047     -292.284047  0.000903 -4.646951  0.158013
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  150     -292.284973     -292.284510     -292.284510  0.000431 -4.646864  0.152776
+mix: switching mixer --> Pulay
+   scf:  151     -291.827617     -292.278362     -292.278362  0.818701 -4.605501  0.289576
+   scf:  152     -292.190384     -292.258311     -292.258311  0.054549 -4.626279  0.670268
+   scf:  153     -292.286856     -292.285821     -292.285821  0.040845 -4.626153  0.136476
+   scf:  154     -291.852724     -292.286219     -292.286219  0.805737 -4.630018  0.131201
+   scf:  155     -291.853263     -292.286270     -292.286270  0.805693 -4.629692  0.130503
+   scf:  156     -292.285738     -292.286011     -292.286011  0.004631 -4.631584  0.132308
+   scf:  157     -291.849484     -292.285148     -292.285148  0.810199 -4.625813  0.144871
+   scf:  158     -292.284615     -292.284881     -292.284881  0.000376 -4.625828  0.148052
+   scf:  159     -292.284288     -292.284585     -292.284585  0.000237 -4.646603  0.151540
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  160     -292.284514     -292.284549     -292.284549  0.000194 -4.646663  0.151900
+mix: switching mixer --> Pulay
+   scf:  161     -291.827564     -292.278335     -292.278335  0.821519 -4.605485  0.289982
+   scf:  162     -292.197441     -292.260331     -292.260331  0.053371 -4.626102  0.646169
+   scf:  163     -292.285821     -292.285605     -292.285605  0.039362 -4.625999  0.138635
+   scf:  164     -291.850840     -292.285697     -292.285697  0.807933 -4.625913  0.137317
+   scf:  165     -291.852738     -292.286260     -292.286260  0.809212 -4.629826  0.129614
+   scf:  166     -291.852508     -292.286021     -292.286021  0.806235 -4.631129  0.134203
+   scf:  167     -292.286035     -292.286028     -292.286028  0.000068 -4.631130  0.134131
+mix: Pulay -- inversion failed, > SVD [rank/size] 6 / 7
+   scf:  168     -292.286028     -292.286028     -292.286028  0.000072 -4.631130  0.134104
+mix: Pulay -- inversion failed, > SVD [rank/size] 6 / 8
+   scf:  169     -292.286044     -292.286036     -292.286036  0.000122 -4.631130  0.134042
+mix: Pulay -- inversion failed, > SVD [rank/size] 5 / 8
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  170     -291.851172     -292.285678     -292.285678  0.804935 -4.625966  0.137654
+mix: switching mixer --> Pulay
+   scf:  171     -291.835503     -292.280574     -292.280574  0.812190 -4.605269  0.191359
+   scf:  172     -291.779204     -292.261950     -292.261950  0.838614 -4.605598  0.520484
+   scf:  173     -292.275719     -292.275538     -292.275538  0.028946 -4.605493  0.234195
+   scf:  174     -292.289006     -292.282295     -292.282295  0.004125 -4.605293  0.176098
+   scf:  175     -291.849737     -292.286016     -292.286016  0.815433 -4.631179  0.130605
+   scf:  176     -292.286184     -292.286186     -292.286186  0.016688 -4.629878  0.125084
+   scf:  177     -292.284549     -292.285558     -292.285558  0.024681 -4.625965  0.139379
+   scf:  178     -292.284235     -292.284898     -292.284898  0.001935 -4.626028  0.148192
+   scf:  179     -292.285977     -292.285441     -292.285441  0.003294 -4.625926  0.140332
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  180     -292.286335     -292.285925     -292.285925  0.010765 -4.631061  0.130268
+mix: switching mixer --> Pulay
+   scf:  181     -291.835152     -292.280383     -292.280383  0.833375 -4.605277  0.187305
+   scf:  182     -292.287583     -292.284285     -292.284285  0.010875 -4.626000  0.153033
+   scf:  183     -292.285171     -292.284913     -292.284913  0.005317 -4.625988  0.143597
+   scf:  184     -291.849677     -292.285509     -292.285509  0.831534 -4.625927  0.133378
+   scf:  185     -291.854379     -292.286318     -292.286318  0.791222 -4.629724  0.140247
+   scf:  186     -292.283235     -292.286098     -292.286098  0.062827 -4.631126  0.127774
+   scf:  187     -292.286081     -292.286093     -292.286093  0.003152 -4.631129  0.127133
+   scf:  188     -291.861366     -292.286260     -292.286260  0.816725 -4.629763  0.156778
+   scf:  189     -292.271935     -292.286469     -292.286469  0.188965 -4.629761  0.183554
+mix: Pulay -- resetting history
+mix: switching mixer --> Linear-Kick
+   scf:  190     -292.103037     -292.286116     -292.286116  0.643467 -4.629694  0.150843
+mix: switching mixer --> Pulay
+   scf:  191     -291.833231     -292.280002     -292.280002  1.036656 -4.605268  0.226654
+   scf:  192     -292.231510     -292.284917     -292.284917  0.293853 -4.625926  0.194356
