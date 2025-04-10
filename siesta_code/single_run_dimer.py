@@ -8,6 +8,7 @@ import numpy as np
 folder_path = "../Short-2OS/"
 siesta_executable = "siesta"
 input_template = "short-2OS.fdf"  # Your Siesta input template file
+pseudo_file = "C.psf"  # Update with your pseudopotential filename
 
 os.chdir(folder_path)
 print("Current directory:", os.getcwd())
@@ -19,9 +20,8 @@ output_csv = out_folder + f"/{out_folder}.csv"
 if os.path.exists(output_csv):
     print(f"{output_csv} already exists. Not creating a new file.")
 else:
-    os.makedirs(out_folder)
     with open(output_csv, "w") as csv_file:
-        csv_file.write("Run,Total Energy (eV)\n")
+        csv_file.write("Run,Interatomic Distance (Bohr), Interatomic Distance (Å),Total Energy (eV)\n")
 
 # Find the correct run number checking the previous runs
 i = 0
@@ -33,9 +33,7 @@ run_folder = f"{out_folder}/runs/run{i:03}"
 os.makedirs(run_folder, exist_ok=True)
 
 # Copy pseudopotential and input files into the run folder
-for pseudo_file in os.listdir("pseudopotentials"):
-    pseudopotential = os.path.join("pseudopotentials", pseudo_file)
-    shutil.copy(pseudopotential, run_folder)
+shutil.copy(pseudo_file, run_folder)
 shutil.copy(input_template, run_folder)
 
 # Run Siesta inside the run folder
@@ -50,10 +48,25 @@ pattern = r"Total\s*=\s*([-+]?\d*\.\d+)"
 matches = re.findall(pattern, content)
 total_energy = matches[0] if matches else "N/A"
 
+# Find interatomic distance
+bond_final = os.path.join(run_folder, input_template[:-4]+".BONDS_FINAL")
+with open(bond_final, 'r') as file:
+    content = file.read()
+
+# Use a regex to find all occurrences of the bond distance.
+# The pattern looks for a floating-point number followed by "Ang. Really at:"
+pattern = r'\s+([0-9]+\.[0-9]+)\s+Ang\. Really at:'
+matches = re.findall(pattern, content)
+
+# Convert matches to float values
+bond_distances = [float(distance) for distance in matches]
+print("Extracted bond distances:", bond_distances)
+bond_distance = bond_distances[0] if bond_distances else "N/A"
+bond_distance_bohr = bond_distance / 0.529177
 
 # Store results
 with open(output_csv, "a") as csv_file:
-    csv_file.write(f"{i},{total_energy}\n")
+    csv_file.write(f"{i},{bond_distance_bohr:.3f},{bond_distance},{total_energy}\n")
 
-print(f"Run {i} completed. Energy: {total_energy} eV")
+print(f"Run {i} completed. Interatomic Distance: {bond_distance} Å, Energy: {total_energy} eV")
 
