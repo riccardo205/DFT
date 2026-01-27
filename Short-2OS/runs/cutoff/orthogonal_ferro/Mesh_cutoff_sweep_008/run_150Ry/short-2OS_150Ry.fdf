@@ -1,0 +1,198 @@
+#DON'T FORGET TO PUT THE .PSF FILE TO THE SAME DIRECTORY
+
+SystemName          short 2OS                     # Name of the system we want to investigate
+SystemLabel         short-2OS                       # name of output files
+NumberOfAtoms       86                                # how many number in the unit cell? Dimer -> 2 atoms
+NumberOfSpecies     2                                # how many different type of atoms? Dimer -> 1
+
+%block ChemicalSpeciesLabel 
+ 1  6  C        # Species index, atomic number, species label
+ 2  1  H        # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+# ----------------
+# BASIS DEFINITION
+# ----------------
+PAO.EnergyShift   10 meV
+PAO.Splitnorm     0.15
+PAO.SplitnormH    0.5
+
+%block PAO.Basis                 # Define Basis set: This is Triple zeta polarized
+C                     2                    # Species label, number of l-shells
+ n=2   0   3                         # n, l, Nzeta 
+   0.0      0.0   0.0      
+ n=2   1   3 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   0.0      0.0   0.0   
+H                     1                    # Species label, number of l-shells
+ n=1   0   3 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   0.0      0.0   0.0   
+%endblock PAO.Basis
+
+# ----------------------
+# STRUCTURAL INFORMATION
+# ----------------------
+LatticeConstant     1.0 Ang
+%block LatticeVectors
+   35.000000    0.000000    0.000000
+    0.000000   30.000000    0.000000
+    0.000000    0.000000   30.000000
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat Ang
+%block AtomicCoordinatesAndAtomicSpecies
+    -2.332220   -1.685220   -0.202960        1
+    -2.176320   -3.072590   -0.601740        1
+    -1.102640   -3.472740   -1.369920        1
+    -0.092280   -2.532390   -1.793390        1
+    -0.247330   -1.126210   -1.437340        1
+    -1.371090   -0.747220   -0.641720        1
+     1.027070   -2.949300   -2.533620        1
+     2.014560   -2.025680   -2.957020        1
+     1.866000   -0.613990   -2.628480        1
+     0.742450   -0.175410   -1.861220        1
+     3.156770   -2.457640   -3.714260        1
+     4.111760   -1.545650   -4.149190        1
+     3.958100   -0.151280   -3.847650        1
+     2.866130    0.300310   -3.114030        1
+    -1.863790    4.103570   -2.166800        1
+    -2.720340    3.488830   -3.102090        1
+    -2.314950    2.252300   -3.645900        1
+     0.573840    1.262880   -1.492530        1
+    -0.492080    2.011850   -2.061660        1
+    -0.771610    3.370320   -1.604640        1
+    -1.232600    1.527060   -3.217810        1
+     2.556760    1.203420    0.031050        1
+     0.057350    3.943240   -0.602060        1
+     3.458410    1.829840    0.931580        1
+     1.166260    3.252980   -0.092750        1
+     1.445060    1.887610   -0.530200        1
+     2.054620    3.856550    0.874010        1
+     3.163650    3.189490    1.352500        1
+     4.662770    1.157960    1.353020        1
+     4.834440   -0.276610    1.580130        1
+     6.203670   -0.529030    1.951780        1
+     6.915520    0.755130    1.941410        1
+     5.964760    1.783280    1.592880        1
+     3.900720   -1.342380    1.598500        1
+     4.345150   -2.642310    1.927210        1
+     5.701810   -2.886470    2.258310        1
+     6.636950   -1.822860    2.283690        1
+     6.411290    3.121790    1.448530        1
+     7.765450    3.427110    1.704620        1
+     8.685090    2.413950    2.071060        1
+     8.265120    1.065720    2.174810        1
+    -3.448800   -1.293720    0.632090        1
+    -4.195010   -0.041220    0.579720        1
+    -4.044990   -2.102220    1.691100        1
+    -5.136290   -1.365900    2.280550        1
+    -5.240370   -0.081210    1.572990        1
+    -3.660340   -3.352310    2.240310        1
+    -4.398320   -3.883070    3.321310        1
+    -5.487510   -3.167080    3.876830        1
+    -5.851880   -1.894760    3.367020        1
+    -6.145220    0.984580    1.703460        1
+    -4.097530    1.069440   -0.296650        1
+    -6.009530    2.108900    0.849730        1
+    -4.997190    2.147520   -0.138860        1
+    -6.041270   -3.592710    4.715070        2
+    -6.669840   -1.334750    3.826480        2
+    -2.793080   -3.890860    1.851620        2
+    -4.113620   -4.848660    3.744460        2
+    -6.945670    0.956050    2.443360        2
+    -6.700740    2.948230    0.947780        2
+    -4.913240    3.013900   -0.798860        2
+    -3.363250    1.095180   -1.101910        2
+     2.844810   -1.167520    1.394690        2
+     3.629580   -3.466860    1.941940        2
+     6.026340   -3.897610    2.510970        2
+     7.673630   -2.010040    2.572270        2
+     5.733500    3.912390    1.126120        2
+     8.111880    4.457900    1.612310        2
+     9.729770    2.671300    2.255610        2
+     8.986370    0.283890    2.426140        2
+    -2.953460   -3.787230   -0.331130        2
+    -1.450140    0.286730   -0.309360        2
+    -1.013560   -4.513850   -1.689290        2
+     1.141860   -4.006870   -2.786790        2
+     2.762740    1.362790   -2.895190        2
+     4.706620    0.561330   -4.200610        2
+     3.258970   -3.518760   -3.952090        2
+     4.976620   -1.884540   -4.724580        2
+     2.783230    0.201000   -0.328190        2
+     1.826370    4.865920    1.227790        2
+     3.792840    3.656580    2.111620        2
+    -0.154820    4.956600   -0.252010        2
+    -0.840070    0.657420   -3.754550        2
+    -2.083420    5.103160   -1.777110        2
+    -3.681140    3.947760   -3.355550        2
+    -2.587730    2.238900   -4.705440        2
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+# --
+# XC
+# --
+xc.functional	        GGA	
+xc.authors		PBE	
+
+# ----
+# GRID
+# ----
+MeshCutoff 		150.0 Ry
+
+# ---------------
+# Solution Method
+# ---------------
+SolutionMethod		diagon
+ElectronicTemperature	0.1 K	
+
+# ---
+# SCF
+# ---
+SCF.DM.Tolerance         5.E-6
+SCF.H.Tolerance          5.E-5 eV
+SCF.Mix                  Hamiltonian
+SCF.Mix.Spin             all
+SCF.Mixer.Method         Pulay
+SCF.Mixer.Weight         0.15
+SCF.Mixer.Kick           10
+SCF.Mixer.History        20
+MaxSCFIterations	     200
+DM.UseSaveDM	     	 T
+SaveHS                   T
+
+# --
+# MD
+# --
+MD.TypeOfRun   	        CG  
+MD.Steps                0
+MD.MaxCGDispl           0.02 Ang #0.02 Ang
+MD.UseSaveXV            T
+MD.MaxForceTol          0.0001 eV/Ang
+MD.MaxStressTol         0.0001 GPa
+MD.TargetPressure       0.0001 GPa
+
+# --
+# SPINS
+# --
+Spin  polarized
+%block DM.InitSpin
+   29  1.0
+   42  1.0
+%endblock DM.InitSpin
+
+# --------------
+# OUTPUT OPTIONS
+# --------------
+WriteEigenvalues       F
+WriteForces            T
+WriteCoorStep          T
+WriteCoorXmol          T     # generate the .xyz file 
+WriteMDXmol            T     # generate the .ani file 
+WriteMullikenPop       1
+Write.HirshfeldPop     T
+Write.VoronoiPop       T
+
+
+Write.DM.NetCDF        T
+Write.DMHS.NetCDF      T
+

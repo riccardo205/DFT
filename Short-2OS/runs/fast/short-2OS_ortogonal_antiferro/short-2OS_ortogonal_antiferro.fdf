@@ -1,0 +1,188 @@
+#DON'T FORGET TO PUT THE .PSF FILE TO THE SAME DIRECTORY
+
+SystemName          short 2OS                     # Name of the system we want to investigate
+SystemLabel         short-2OS                       # name of output files
+NumberOfAtoms       86                                # how many number in the unit cell? Dimer -> 2 atoms
+NumberOfSpecies     2                                # how many different type of atoms? Dimer -> 1
+
+%block ChemicalSpeciesLabel 
+ 1  6  C        # Species index, atomic number, species label
+ 2  1  H        # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+# ----------------
+# BASIS DEFINITION
+# ----------------
+PAO.EnergyShift   20 meV
+PAO.Splitnorm     0.15
+PAO.SplitnormH    0.5
+PAO.BasisSize    DZP
+
+# ----------------------
+# STRUCTURAL INFORMATION
+# ----------------------
+LatticeConstant     1.0 Ang
+%block LatticeVectors
+   50.000000    0.000000    0.000000
+    0.000000   30.000000    0.000000
+    0.000000    0.000000   30.000000
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat Ang
+%block AtomicCoordinatesAndAtomicSpecies
+        -2.33222       -1.68522       -0.20296        1
+        -2.17632       -3.07259       -0.60174        1
+        -1.10264       -3.47274       -1.36992        1
+        -0.09228       -2.53239       -1.79339        1
+        -0.24733       -1.12621       -1.43734        1
+        -1.37109       -0.74722       -0.64172        1
+         1.02707       -2.94930       -2.53362        1
+         2.01456       -2.02568       -2.95702        1
+         1.86600       -0.61399       -2.62848        1
+         0.74245       -0.17541       -1.86122        1
+         3.15677       -2.45764       -3.71426        1
+         4.11176       -1.54565       -4.14919        1
+         3.95810       -0.15128       -3.84765        1
+         2.86613        0.30031       -3.11403        1
+        -1.86379        4.10357       -2.16680        1
+        -2.72034        3.48883       -3.10209        1
+        -2.31495        2.25230       -3.64590        1
+         0.57384        1.26288       -1.49253        1
+        -0.49208        2.01185       -2.06166        1
+        -0.77161        3.37032       -1.60464        1
+        -1.23260        1.52706       -3.21781        1
+         2.55676        1.20342        0.03105        1
+         0.05735        3.94324       -0.60206        1
+         3.45841        1.82984        0.93158        1
+         1.16626        3.25298       -0.09275        1
+         1.44506        1.88761       -0.53020        1
+         2.05462        3.85655        0.87401        1
+         3.16365        3.18949        1.35250        1
+         4.66277        1.15796        1.35302        1
+         4.83444       -0.27661        1.58013        1
+         6.20367       -0.52903        1.95178        1
+         6.91552        0.75513        1.94141        1
+         5.96476        1.78328        1.59288        1
+         3.90072       -1.34238        1.59850        1
+         4.34515       -2.64231        1.92721        1
+         5.70181       -2.88647        2.25831        1
+         6.63695       -1.82286        2.28369        1
+         6.41129        3.12179        1.44853        1
+         7.76545        3.42711        1.70462        1
+         8.68509        2.41395        2.07106        1
+         8.26512        1.06572        2.17481        1
+        -3.44880       -1.29372        0.63209        1
+        -4.19501       -0.04122        0.57972        1
+        -4.04499       -2.10222        1.69110        1
+        -5.13629       -1.36590        2.28055        1
+        -5.24037       -0.08121        1.57299        1
+        -3.66034       -3.35231        2.24031        1
+        -4.39832       -3.88307        3.32131        1
+        -5.48751       -3.16708        3.87683        1
+        -5.85188       -1.89476        3.36702        1
+        -6.14522        0.98458        1.70346        1
+        -4.09753        1.06944       -0.29665        1
+        -6.00953        2.10890        0.84973        1
+        -4.99719        2.14752       -0.13886        1
+        -6.04127       -3.59271        4.71507        2
+        -6.66984       -1.33475        3.82648        2
+        -2.79308       -3.89086        1.85162        2
+        -4.11362       -4.84866        3.74446        2
+        -6.94567        0.95605        2.44336        2
+        -6.70074        2.94823        0.94778        2
+        -4.91324        3.01390       -0.79886        2
+        -3.36325        1.09518       -1.10191        2
+         2.84481       -1.16752        1.39469        2
+         3.62958       -3.46686        1.94194        2
+         6.02634       -3.89761        2.51097        2
+         7.67363       -2.01004        2.57227        2
+         5.73350        3.91239        1.12612        2
+         8.11188        4.45790        1.61231        2
+         9.72977        2.67130        2.25561        2
+         8.98637        0.28389        2.42614        2
+        -2.95346       -3.78723       -0.33113        2
+        -1.45014        0.28673       -0.30936        2
+        -1.01356       -4.51385       -1.68929        2
+         1.14186       -4.00687       -2.78679        2
+         2.76274        1.36279       -2.89519        2
+         4.70662        0.56133       -4.20061        2
+         3.25897       -3.51876       -3.95209        2
+         4.97662       -1.88454       -4.72458        2
+         2.78323        0.20100       -0.32819        2
+         1.82637        4.86592        1.22779        2
+         3.79284        3.65658        2.11162        2
+        -0.15482        4.95660       -0.25201        2
+        -0.84007        0.65742       -3.75455        2
+        -2.08342        5.10316       -1.77711        2
+        -3.68114        3.94776       -3.35555        2
+        -2.58773        2.23890       -4.70544        2
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+# --
+# XC
+# --
+xc.functional	        GGA	
+xc.authors		PBE	
+
+# ----
+# GRID
+# ----
+MeshCutoff 		300 Ry
+
+# ---------------
+# Solution Method
+# ---------------
+SolutionMethod		diagon
+ElectronicTemperature	300 K	
+
+# ---
+# SCF
+# ---
+SCF.DM.Tolerance         5.E-6
+SCF.H.Tolerance          5.E-5 eV
+SCF.Mix                  Hamiltonian
+SCF.Mix.Spin             all
+SCF.Mixer.Method         Pulay
+SCF.Mixer.Weight         0.15
+SCF.Mixer.Kick           10
+SCF.Mixer.History        20
+MaxSCFIterations	     200
+DM.UseSaveDM	     	 T
+SaveHS                   T
+
+# --
+# MD
+# --
+MD.TypeOfRun   	        CG  
+MD.Steps                1000
+MD.MaxCGDispl           0.02 Ang #0.02 Ang
+MD.UseSaveXV            T
+MD.MaxForceTol          0.0001 eV/Ang
+MD.MaxStressTol         0.0001 GPa
+MD.TargetPressure       0.0001 GPa
+
+# --
+# SPINS
+# --
+Spin  polarized
+%block DM.InitSpin
+   29  -1.0
+   42  1.0
+%endblock DM.InitSpin
+
+# --------------
+# OUTPUT OPTIONS
+# --------------
+WriteEigenvalues       F
+WriteForces            T
+WriteCoorStep          T
+WriteCoorXmol          T     # generate the .xyz file 
+WriteMDXmol            T     # generate the .ani file 
+WriteMullikenPop       1
+Write.HirshfeldPop     T
+Write.VoronoiPop       T
+
+
+Write.DM.NetCDF        T
+Write.DMHS.NetCDF      T
+

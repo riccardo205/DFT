@@ -1,0 +1,3 @@
+FATAL: SCF_NOT_CONV: SCF did not converge in maximum number of steps (required).
+ (info): Geom step, scf iteration, dDmax, dHmax:    0   200      0.001340     0.000121
+FATAL: ABNORMAL_TERMINATION
