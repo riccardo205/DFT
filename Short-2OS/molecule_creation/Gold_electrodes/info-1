@@ -1,0 +1,10 @@
+Para concatenar diferentes ficheros se usa concatxyz, por ejemplo:
+
+pyconcatxyz -i file1.xyz,file2.xyz,file3.xyz -o fichero_final.xyz -d z
+(-d se refiere a concatenar en la direccion z).
+
+Para mover y rotar la molecula se usa pyxyz.
+Si ejecutas:
+pyxyz -i file.xyz
+te aparecen las diferentes opciones (rotar, desplazar...)
+

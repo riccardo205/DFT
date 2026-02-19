@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# A code to concatenate several xyz files in the direction of one of the lattice vectors
+
+# Amador García Fuente. Universidad de Oviedo. 2021
+
+import numpy as np
+import argparse
+
+
+# Parsing del input
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-i','-input', help='Input file names, separated by commas', required=True, dest='inpfilenames')
+parser.add_argument('-o','-output', help='Output file name', required=True, dest='outfilename')
+parser.add_argument('-d', help='Direction to concatenate (x,y,z)', required=True, dest='dir')
+
+args = parser.parse_args()
+
+print("\n\nProgram by Amador García Fuente. Universidad de Oviedo. 2021")
+print("------------------------------------------------------------")
+
+# READ INPUT FILES
+
+def readxyz(filename):
+    with open(filename,"r") as f:
+        inputlines = f.readlines()
+        natoms = int(inputlines[0])
+        xyz = np.zeros((natoms,3))
+        types = [];
+        for iatom in range(natoms):
+            line = inputlines[iatom+2].split()
+            xyz[iatom,0]=float(line[1])
+            xyz[iatom,1]=float(line[2])
+            xyz[iatom,2]=float(line[3])
+            types.append(line[0])
+        inplat = inputlines[1].split()
+        # Read lattice vectors from 1st line
+        lattice = np.zeros((3,3))
+        if len(inplat)==1:
+            lattice[2,2] = float(inplat[0])       # If there is only 1 value, it is the displacement in the Z direction
+        elif len(inplat)==3:
+            for j in range(3):
+                lattice[j,j] = float(inplat[j])   # If there are 3 values, they are the displacements in the X, Y and Z directions
+        elif len(inplat)==9:
+            lattice[0,0] = float(inplat[0])    # If there are 9 values, they are the 3 lattice vectors in cartesian coordinates
+            lattice[0,1] = float(inplat[1])
+            lattice[0,2] = float(inplat[2])
+            lattice[1,0] = float(inplat[3])
+            lattice[1,1] = float(inplat[4])
+            lattice[1,2] = float(inplat[5])
+            lattice[2,0] = float(inplat[6])
+            lattice[2,1] = float(inplat[7])
+            lattice[2,2] = float(inplat[8])
+        elif len(inplat)!=0:
+            raise Exception("Error reading input file!, line 2 must be empty or contain lattice vectors")
+    return natoms, xyz, types, lattice 
+
+filenames = args.inpfilenames.split(",")
+nfiles = len(filenames)
+
+natoms = 0
+total_lattice = np.zeros((3,3))
+for file in filenames:
+    nat, xyz, types, lattice = readxyz(file)
+    if np.all(total_lattice == 0):
+        total_lattice[:,:] = lattice[:,:]
+    else:
+        if args.dir == "x":
+            total_lattice[0,:] = total_lattice[0,:] + lattice[0,:]
+        elif args.dir == "y":
+            total_lattice[1,:] = total_lattice[1,:] + lattice[1,:]
+        elif args.dir == "z":
+            total_lattice[2,:] = total_lattice[2,:] + lattice[2,:]
+        else:
+            raise Exception("Invalid direction!")
+    natoms = natoms + nat
+
+with open(args.outfilename,"w") as f:
+    f.write(" {:d} \n".format(natoms))
+    for i1 in range(3):
+        for i2 in range(3):
+            f.write(" {:12.6f} ".format(total_lattice[i1,i2]))
+    f.write("\n")
+    displacement = np.zeros(3)
+    for file in filenames:
+        nat, xyz, types, lattice = readxyz(file)
+        for iatom in range(nat):
+            newxyz = xyz[iatom] + displacement
+            f.write("{:<2}   {:14.6f}  {:14.6f}  {:14.6f}\n".format(types[iatom], newxyz[0], newxyz[1], newxyz[2])) 
+        if args.dir == "x":
+            displacement = displacement + lattice[0,:]
+        elif args.dir == "y":
+            displacement = displacement + lattice[1,:]
+        elif args.dir == "z":
+            displacement = displacement + lattice[2,:]
+
+        
+

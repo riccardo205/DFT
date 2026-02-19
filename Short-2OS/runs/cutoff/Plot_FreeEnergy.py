@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "orthogonal_ferro/Mesh_cutoff_sweep_008")
+path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Mesh_cutoff_sweep_conf_4_antiferro_with_DM")
 print(path)
 os.chdir(path)
 
@@ -55,11 +55,11 @@ dE = np.array(energies) - energies[-1]
 fig, ax = plt.subplots(figsize=(5, 5))
 ax.plot(cutoffs, dE, marker='o', linestyle='-', color='b')
 ax.set_xlabel('Mesh Cutoff (Ry)')
-ax.set_ylabel('Total Energy (eV)')
+ax.set_ylabel('Error Total Energy (eV)')
 # ax.set_ylim(-8851.625, -8851.5)
 # ax.set_xlim(0, 700)
 # ax.set_title('Total Energy vs Mesh Cutoff')
-ax.grid(True)
+# ax.grid(True)
 
 # ------------------------ Inset: dE/dCutoff --------------------------------
 # Finite‑difference derivative (uses central differences internally)
