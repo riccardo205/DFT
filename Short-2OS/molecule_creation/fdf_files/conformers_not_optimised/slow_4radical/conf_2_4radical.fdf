@@ -1,0 +1,205 @@
+#DON'T FORGET TO PUT THE .PSF FILE TO THE SAME DIRECTORY
+
+SystemName          short 2OS                     # Name of the system we want to investigate
+SystemLabel         short-2OS                       # name of output files
+NumberOfAtoms       86                                # how many number in the unit cell? Dimer -> 2 atoms
+NumberOfSpecies     2                                # how many different type of atoms? Dimer -> 1
+
+%block ChemicalSpeciesLabel 
+ 1  6  C        # Species index, atomic number, species label
+ 2  1  H        # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+
+# ----------------
+# BASIS DEFINITION
+# ----------------
+PAO.EnergyShift   10 meV
+PAO.Splitnorm     0.15
+PAO.SplitnormH    0.5
+
+%block PAO.Basis                 # Define Basis set: This is Triple zeta polarized
+C                     2                    # Species label, number of l-shells
+ n=2   0   3                         # n, l, Nzeta 
+   0.0      0.0   0.0      
+ n=2   1   3 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   0.0      0.0   0.0   
+H                     1                    # Species label, number of l-shells
+ n=1   0   3 P   1                   # n, l, Nzeta, Polarization, NzetaPol
+   0.0      0.0   0.0   
+%endblock PAO.Basis
+
+
+# ----------------------
+# STRUCTURAL INFORMATION
+# ----------------------
+LatticeConstant     1.0 Ang
+%block LatticeVectors
+   35.000000    0.000000    0.000000
+    0.000000   30.000000    0.000000
+    0.000000    0.000000   30.000000
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat Ang
+%block AtomicCoordinatesAndAtomicSpecies
+      2.430400      0.865900     -0.809000        1
+      3.400000      1.076900      0.165300        1
+      3.481100      0.212900      1.243300        1
+      2.587100     -0.860300      1.338100        1
+      1.633000     -1.032200      0.339000        1
+      1.540500     -0.184400     -0.735200        1
+      2.625100     -1.746500      2.391700        1
+      1.760500     -2.808900      2.515900        1
+      0.810200     -2.983700      1.525200        1
+      0.752900     -2.100300      0.450400        1
+      1.805800     -3.689500      3.571900        1
+      0.926800     -4.757400      3.684400        1
+     -0.016100     -4.928900      2.699200        1
+     -0.070900     -4.051200      1.634400        1
+     -0.959700     -4.150700     -3.601900        1
+      0.248900     -4.766800     -3.855700        1
+      1.267400     -4.546700     -2.954400        1
+     -0.285800     -2.369100     -0.540000        1
+     -0.104800     -3.166600     -1.640200        1
+     -1.161000     -3.347200     -2.502900        1
+      1.117800     -3.756200     -1.846500        1
+     -1.690400     -0.939700      0.828600        1
+     -2.363800     -2.749200     -2.274100        1
+     -2.916000     -0.318600      1.080000        1
+     -2.572200     -1.946000     -1.180500        1
+     -1.518700     -1.751000     -0.297900        1
+     -3.771100     -1.318500     -0.904900        1
+     -3.967800     -0.513500      0.198400        1
+     -3.102600      0.547600      2.275100        1
+     -2.819700      1.973700      1.966300        1
+     -3.946800      2.710200      2.314200        1
+     -4.979100      1.837800      2.845200        1
+     -4.462300      0.540600      2.817300        1
+     -1.715100      2.604100      1.439900        1
+     -1.756500      3.980300      1.266800        1
+     -2.858000      4.736800      1.601700        1
+     -3.984100      4.099000      2.138200        1
+     -5.221300     -0.542800      3.267900        1
+     -6.509500     -0.367100      3.756500        1
+     -7.018900      0.931600      3.781600        1
+     -6.267300      2.007900      3.335100        1
+      2.408100      1.840900     -1.936900        1
+      2.861100      3.181300     -1.483800        1
+      3.316100      1.460700     -3.027400        1
+      4.235100      2.495100     -3.201600        1
+      3.947800      3.560100     -2.240700        1
+      3.434800      0.375600     -3.847500        1
+      4.422500      0.280400     -4.823700        1
+      5.323800      1.330000     -4.971400        1
+      5.229300      2.447200     -4.153200        1
+      4.519900      4.799700     -1.961600        1
+      2.333200      3.980200     -0.476200        1
+      4.003900      5.593600     -0.968000        1
+      2.914900      5.223300     -0.203600        1
+      6.115200      1.323300     -5.708800        2
+      5.930900      3.255600     -4.274000        2
+      2.763500     -0.471000     -3.781300        2
+      4.498400     -0.591800     -5.464500        2
+      5.375200      5.090000     -2.564500        2
+      4.479200      6.546400     -0.786500        2
+      2.503300      5.848700      0.583100        2
+      1.467700      3.628400      0.095300        2
+     -0.804900      2.060500      1.152800        2
+     -0.886600      4.510700      0.847500        2
+     -2.910100      5.810900      1.474000        2
+     -4.870500      4.671300      2.411400        2
+     -4.793600     -1.556200      3.237300        2
+     -7.095200     -1.206500      4.104500        2
+     -8.033300      1.077900      4.164000        2
+     -6.682500      3.015400      3.362600        2
+      4.086300      1.907400      0.085300        2
+      0.799000     -0.340400     -1.486900        2
+      4.236500      0.364000      2.018600        2
+     -0.802800     -4.172500      0.854900        2
+     -0.701100     -5.766500      2.792200        2
+      2.567000     -3.509900      4.318500        2
+      0.992800     -5.432300      4.534900        2
+     -0.911500     -0.766200      1.523400        2
+     -4.600700     -1.466200     -1.590100        2
+     -4.907100     -0.036600      0.394000        2
+     -3.181800     -2.907200     -2.970600        2
+      1.928800     -3.594200     -1.151000        2
+     -1.826900     -4.267500     -4.261200        2
+      0.375400     -5.400200     -4.740200        2
+      3.368000     -1.590200      3.143900        2
+      2.222700     -5.035500     -3.158800        2
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+# --
+# XC
+# --
+xc.functional	        GGA	
+xc.authors		PBE	
+
+# ----
+# GRID
+# ----
+MeshCutoff 		500 Ry
+
+# ---------------
+# Solution Method
+# ---------------
+SolutionMethod		diagon
+ElectronicTemperature	0.1 K	
+
+# ---
+# SCF
+# ---
+SCF.DM.Tolerance         5.E-6
+SCF.H.Tolerance          5.E-5 eV
+SCF.Mix                  Hamiltonian
+SCF.Mix.Spin             all
+SCF.Mixer.Method         Pulay
+SCF.Mixer.Weight         0.15
+SCF.Mixer.Kick           10
+SCF.Mixer.History        20
+MaxSCFIterations	       200
+DM.UseSaveDM	     	    T
+SaveHS                   T
+
+# --
+# MD
+# --
+MD.TypeOfRun   	        CG  
+MD.Steps                100
+MD.MaxCGDispl           0.01 Ang #0.02 Ang
+MD.UseSaveXV            T
+MD.MaxForceTol          0.001 eV/Ang
+MD.MaxStressTol         0.0001 GPa
+MD.TargetPressure       0.0001 GPa
+
+# --
+# SPINS
+# --
+Spin  polarized
+# --
+# SPINS
+# --
+Spin  polarized
+%block DM.InitSpin
+   23  1.0
+   7   1.0
+   29 -1.0
+   42 -1.0
+%endblock DM.InitSpin
+
+# --------------
+# OUTPUT OPTIONS
+# --------------
+WriteEigenvalues       F
+WriteForces            T
+WriteCoorStep          T
+WriteCoorXmol          T     # generate the .xyz file 
+WriteMDXmol            T     # generate the .ani file 
+WriteMullikenPop       1
+Write.HirshfeldPop     T
+Write.VoronoiPop       T
+
+
+Write.DM.NetCDF        T
+Write.DMHS.NetCDF      T
+

@@ -1,0 +1,157 @@
+#DON'T FORGET TO PUT THE .PSF FILE TO THE SAME DIRECTORY
+SystemName          Short 2OS                     # Name of the system we want to investigate
+SystemLabel         short-2OS                       # name of output files
+NumberOfAtoms       85                                # how many number in the unit cell? Dimer -> 2 atoms
+NumberOfSpecies     2                                # how many different type of atoms? Dimer -> 1
+%block ChemicalSpeciesLabel
+ 1  6  C        # Species index, atomic number, species label
+ 2  1  H        # Species index, atomic number, species label
+%endblock ChemicalSpeciesLabel
+# ----------------------
+# STRUCTURAL INFORMATION
+# ----------------------
+LatticeConstant     1.0 Ang
+%block LatticeVectors
+   30.000000    0.000000    0.000000
+    0.000000   20.000000    0.000000
+    0.000000    0.000000   20.000000
+%endblock LatticeVectors
+AtomicCoordinatesFormat Ang
+%block AtomicCoordinatesAndAtomicSpecies
+     -2.72805       -1.54854        0.61725    1
+     -2.67352       -2.84852        0.06387    1
+     -1.56978       -3.28137       -0.65449    1
+     -0.50590       -2.42514       -0.87569    1
+     -0.49565       -1.10607       -0.39456    1
+     -1.61531       -0.68811        0.38983    1
+      0.75532       -2.87709       -1.29872    1
+      1.67741       -2.28864       -1.66746    1
+      1.68519       -0.88496       -1.52760    1
+      0.62279       -0.27257       -0.78345    1
+      2.69081       -2.96683       -2.34048    1
+      3.74021       -2.25089       -2.91102    1
+      3.76239       -0.85747       -2.81894    1
+      2.74288       -0.17494       -2.14176    1
+     -1.57651        4.20125       -0.87046    1
+     -2.67016        3.66773       -1.69872    1
+     -2.63184        2.39052       -2.07680    1
+      0.62695        1.21801       -0.46136    1
+     -0.49368        2.03153       -0.86519    1
+     -0.54492        3.40834       -0.49922    1
+     -1.50452        1.53978       -1.64095    1
+      2.97295        1.22450        0.51611    1
+      0.49374        3.97785        0.22444    1
+      4.07895        1.94590        1.02709    1
+      1.63111        3.24636        0.53811    1
+      1.73761        1.86976        0.20333    1
+      2.68290        3.91698        1.16756    1
+      3.88907        3.28110        1.39111    1
+      5.46039        1.36106        1.08529    1
+      5.88691       -0.05915        1.15465    1
+      7.26199       -0.12502        0.96661    1
+      7.77994        1.21229        0.75276    1
+      6.72575        2.11365        0.80337    1
+      5.15642       -1.23420        1.37845    1
+      5.83876       -2.46389        1.38274    1
+      7.22957       -2.51403        1.17402    1
+      7.95450       -1.33466        0.96639    1
+      6.97285        3.47328        0.52847    1
+      8.28632        3.89351        0.25854    1
+      9.34104        2.96864        0.24374    1
+      9.09114        1.61237        0.48391    1
+     -3.95180       -1.08332        1.44232    1
+     -4.72883        0.05512        0.79581    1
+     -5.06846       -2.12012        1.54443    1
+     -6.23685       -1.67252        0.95525    1
+     -6.03120       -0.32256        0.50040    1
+     -5.02951       -3.39154        2.13421    1
+     -6.17863       -4.20119        2.08460    1
+     -7.35255       -3.73721        1.46325    1
+     -7.39128       -2.45558        0.89735    1
+     -6.94614        0.54837       -0.09352    1
+     -4.31618        1.36643        0.53012    1
+     -6.53182        1.85494       -0.37473    1
+     -5.22779        2.26439       -0.05266    1
+     -8.23298       -4.36598        1.42880    2
+     -8.29665       -2.08771        0.43255    2
+     -4.12641       -3.75220        2.60776    2
+     -6.16134       -5.18938        2.52434    2
+     -7.95845        0.23616       -0.31461    2
+     -7.22344        2.55631       -0.82363    2
+     -4.93130        3.28367       -0.25192    2
+     -3.32390        1.70666        0.78059    2
+      4.09321       -1.22460        1.55405    2
+      5.29194       -3.38227        1.54838    2
+      7.74460       -3.46577        1.17482    2
+      9.02459       -1.36805        0.80350    2
+      6.20242        4.22081        0.49280    2
+      8.48272        4.93678        0.04971    2
+     10.34645        3.30438        0.02539    2
+      9.90122        0.89498        0.44274    2
+     -3.47169       -3.56218        0.17289    2
+     -1.63346        0.30362        0.80771    2
+     -1.54276       -4.28416       -1.05981    2
+      0.87456       -4.61280       -0.43252    2
+      2.79616        0.90309       -2.10270    2
+      4.57378       -0.30410       -3.27225    2
+      2.65905       -4.04629       -2.41083    2
+      4.53130       -2.77661       -3.42947    2
+      3.12147        0.19795        0.26849    2
+      2.59523        4.96301        1.43982    2
+      4.67538        3.85672        1.84736    2
+      0.44917        5.03081        0.48995    2
+     -1.52717        0.52409       -2.00713    2
+     -1.61022        5.25259       -0.59427    2
+     -3.48832        4.30782       -2.00948    2
+%endblock AtomicCoordinatesAndAtomicSpecies
+# --
+# XC
+# --
+xc.functional	        GGA	
+xc.authors		PBE	
+# ----
+# GRID
+# ----
+# MeshCutoff 		100. Ry
+# ---------------
+# Solution Method
+# ---------------
+SolutionMethod		diagon
+ElectronicTemperature	300 K	
+# ---
+# SCF
+# ---
+SCF.DM.Tolerance         5.E-6
+SCF.H.Tolerance          5.E-5 eV
+SCF.Mix                  Hamiltonian
+# SCF.Mix.Spin             all
+SCF.Mixer.Method         Pulay
+SCF.Mixer.Weight         0.15
+SCF.Mixer.Kick           10
+SCF.Mixer.History        20
+MaxSCFIterations	     200
+DM.UseSaveDM	     	 T
+SaveHS                   T
+# --
+# MD
+# --
+MD.TypeOfRun   	        CG
+MD.Steps                100
+MD.MaxCGDispl           0.2 Ang #0.02 Ang
+MD.UseSaveXV            T
+MD.MaxForceTol          0.0001 eV/Ang
+MD.MaxStressTol         0.0001 GPa
+MD.TargetPressure       0.0001 GPa
+# --------------
+# OUTPUT OPTIONS
+# --------------
+WriteEigenvalues       F
+WriteForces            T
+WriteCoorStep          T
+WriteCoorXmol          T     # generate the .xyz file 
+WriteMDXmol            T     # generate the .ani file 
+WriteMullikenPop       1
+Write.HirshfeldPop     T
+Write.VoronoiPop       T
+Write.DM.NetCDF        T
+Write.DMHS.NetCDF      T

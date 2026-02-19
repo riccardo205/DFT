@@ -1,0 +1,4 @@
+Folder,E_init,E_final,F_init,F_final,DM_steps,Stot,Unpaired_spins,Spin_final_list,Spin_init_list
+conf_31_ferro10,-17698.05032,174542.353157606,,,1,0,0.0,,
+conf_31_ferro20,-17702.187638,186569.492672518,,,1,0,0.0,,
+conf_31_ferro5,-17695.472231,228591.180428,,,1,0,0.0,,
