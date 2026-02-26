@@ -76,6 +76,69 @@ def apply_rotation(atoms: Atoms, R: np.ndarray, about_point: np.ndarray):
     atoms.positions = (p @ R.T) + about_point
 
 
+def _plane_normal(points: np.ndarray):
+    pts = np.asarray(points, float)
+    c = pts.mean(axis=0)
+    X = pts - c
+    _, _, vh = np.linalg.svd(X, full_matrices=False)
+    n = vh[-1]
+    n /= np.linalg.norm(n)
+    return n
+
+
+def _end_outward_normal(mol: Atoms, end_idx, mol_center: np.ndarray):
+    pts = mol.positions[as_array(end_idx)]
+    end_center = pts.mean(axis=0)
+    fallback = end_center - mol_center
+    if np.linalg.norm(fallback) < 1e-8:
+        fallback = np.array([1.0, 0.0, 0.0])
+    if len(pts) == 1:
+        n = fallback
+    elif len(pts) == 2:
+        s = pts[1] - pts[0]
+        s_norm = np.linalg.norm(s)
+        if s_norm < 1e-8:
+            n = fallback
+        else:
+            s_unit = s / s_norm
+            n = fallback - s_unit * np.dot(fallback, s_unit)
+            if np.linalg.norm(n) < 1e-8:
+                axis = np.array([1.0, 0.0, 0.0])
+                if np.abs(np.dot(axis, s_unit)) > 0.9:
+                    axis = np.array([0.0, 1.0, 0.0])
+                n = np.cross(s_unit, axis)
+    else:
+        n = _plane_normal(pts)
+        if np.dot(n, fallback) < 0:
+            n = -n
+    n /= np.linalg.norm(n)
+    return n
+
+
+def _mol_end_axis(mol: Atoms, mol_end1, mol_end2):
+    m1 = center_of_atoms(mol, mol_end1)
+    m2 = center_of_atoms(mol, mol_end2)
+    mol_center = mol.positions.mean(axis=0)
+
+    def end_normal(end_idx, other_center):
+        pts = mol.positions[as_array(end_idx)]
+        if len(pts) < 3:
+            extras = [other_center, mol_center]
+            need = 3 - len(pts)
+            pts = np.vstack([pts, *extras[:need]])
+        return fit_plane_normal(pts, other_center)
+
+    n1 = end_normal(mol_end1, m2)
+    n2 = end_normal(mol_end2, m1)
+    axis = n1 + n2
+    if np.linalg.norm(axis) < 1e-8:
+        axis = m2 - m1
+    axis /= np.linalg.norm(axis)
+    if np.dot(axis, (m2 - m1)) < 0:
+        axis = -axis
+    return axis
+
+
 def build_junction(
     mol_path="mol.xyz",
     left_path="el_L.xyz",
@@ -105,8 +168,13 @@ def build_junction(
     mol_center = mol.positions.mean(axis=0)
     
     # Align molecule axis with junction_axis
-    tgt_axis = np.asarray(junction_axis, float)
-    tgt_axis /= np.linalg.norm(tgt_axis)
+    if junction_axis is None or (
+        isinstance(junction_axis, str) and junction_axis.lower() == "auto"
+    ):
+        tgt_axis = _mol_end_axis(mol, mol_end1, mol_end2)
+    else:
+        tgt_axis = np.asarray(junction_axis, float)
+        tgt_axis /= np.linalg.norm(tgt_axis)
     R_mol = rotation_matrix_from_vectors(mol_axis, tgt_axis)
     apply_rotation(mol, R_mol, about_point=mol_center)
     
@@ -114,13 +182,14 @@ def build_junction(
     m1 = center_of_atoms(mol, mol_end1)
     m2 = center_of_atoms(mol, mol_end2)
     mol_axis = tgt_axis  # now aligned with junction_axis
-
+    mol_center = mol.positions.mean(axis=0)
+    n1_out = _end_outward_normal(mol, mol_end1, mol_center)
+    n2_out = _end_outward_normal(mol, mol_end2, mol_center)
     # A helper to orient an electrode:
     def orient_electrode(el: Atoms, tip_idx, plane_idx, desired_tip_dir):
         tip = center_of_atoms(el, tip_idx)
         plane_pts = el.positions[as_array(plane_idx)]
         n = fit_plane_normal(plane_pts, tip)
-        print("n (pointing towards tip):", n)
 
         # Rotate plane normal -> desired_tip_dir (so planes are parallel)
         tgt = np.asarray(desired_tip_dir, float)
@@ -129,21 +198,30 @@ def build_junction(
         R1 = rotation_matrix_from_vectors(n, tgt)
         apply_rotation(el, R1, about_point=tip)
 
-    # --- Orient electrodes along junction_axis
+    # --- Orient electrodes along junction_axis (parallel guess)
     # Left electrode: normal points toward +junction_axis (into molecule)
     orient_electrode(elL, L_tip, L_plane_atoms, desired_tip_dir=+tgt_axis)
     # Right electrode: normal points toward -junction_axis (into molecule)
     orient_electrode(elR, R_tip, R_plane_atoms, desired_tip_dir=-tgt_axis)
 
-    # --- Translate electrodes to desired gaps
-    # Place left tip at m1 - gap_L * junction_axis (so tip is just outside the molecule end)
+    # --- Tilt electrodes to match the outward normals of each mol end
+    # This allows each electrode plane to follow its local mol_end orientation.
     L_tip_pos = center_of_atoms(elL, L_tip)
-    target_L = m1 - gap_L * tgt_axis
+    R_tip_pos = center_of_atoms(elR, R_tip)
+    R_left = rotation_matrix_from_vectors(-tgt_axis, n1_out)
+    R_right = rotation_matrix_from_vectors(+tgt_axis, n2_out)
+    apply_rotation(elL, R_left, about_point=L_tip_pos)
+    apply_rotation(elR, R_right, about_point=R_tip_pos)
+
+    # --- Translate electrodes to desired gaps using the end-plane outward normals
+    # Place left tip at m1 + gap_L * n1_out (so tip is just outside the molecule end)
+    L_tip_pos = center_of_atoms(elL, L_tip)
+    target_L = m1 + gap_L * n1_out
     elL.translate(target_L - L_tip_pos)
 
-    # Place right tip at m2 + gap_R * junction_axis
+    # Place right tip at m2 + gap_R * n2_out
     R_tip_pos = center_of_atoms(elR, R_tip)
-    target_R = m2 + gap_R * tgt_axis
+    target_R = m2 + gap_R * n2_out
     elR.translate(target_R - R_tip_pos)
 
     # --- Combine
@@ -154,23 +232,32 @@ def build_junction(
 
 if __name__ == "__main__":
     # IMPORTANT: indices here are 1-based!
-    build_junction(
-        mol_path="main_conf/molecule/short-2OS.xyz",
-        left_path="Au_electrodes_relaxed/right.xyz",
-        right_path="Au_electrodes_relaxed/right.xyz",
-        out_path="main_conf/junctions/junction12.xyz",
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__)))
+    
+    gap_list = np.linspace(1.0, 3.0, num=21) 
+    print(f"Gap list: {gap_list}")
+    
+    for i, gap in enumerate(gap_list, start=1):
+        build_junction(
+            mol_path="main_conf/molecule/short-2OS.xyz",
+            left_path="Au_electrodes_relaxed/right.xyz",
+            right_path="Au_electrodes_relaxed/right.xyz",
+            out_path=f"main_conf/junctions_2/conf_{i}.xyz",
 
-        # EXAMPLES (replace with yours)
-        mol_end1=(59,56),           # e.g. anchoring atom at one end
-        mol_end2=(66,70),          # anchoring atom at other end
+            # EXAMPLES (replace with yours)
+            mol_end1=(59,56),           # e.g. anchoring atom at one end
+            mol_end2=(66,70),          # anchoring atom at other end
 
-        L_tip=(1,),
-        R_tip=(1,),
+            L_tip=(1,),
+            R_tip=(1,),
 
-        L_plane_atoms=(11, 20, 17),   # atoms on the plane away from tip
-        R_plane_atoms=(11, 20, 17),
+            L_plane_atoms=(11, 20, 17),   # atoms on the plane away from tip
+            R_plane_atoms=(11, 20, 17),
 
-        gap_L=3.9,
-        gap_R=3.9,
-        junction_axis=(1.0, 0.0, 0.0),
-    )
+            gap_L=gap,
+            gap_R=gap,
+            junction_axis=(1.0, 0.0, 0.0), #(1.0, 0.0, 0.0)
+        
+        )

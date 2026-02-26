@@ -7,8 +7,8 @@ from pymol import cgo
 import numpy as np
 
 # ─── 1) USER CONFIG ────────────────────────────────────────────────────────────
-initial_label = "dimers_run2/slow_lowT_lowest_forces"  # subfolder in Short-2OS/runs/ and visualisation/
-label_out     = "dimers_run2/slow_lowT_lowest_forces_arrows_rot_x_0_y_0"
+initial_label = "junction_SM2/slow"  # subfolder in Short-2OS/runs/ and visualisation/
+label_out     = "junction_SM2/slow_rot_x_0_y_0"
 ROOT_DIR      = Path(f"Short-2OS/runs/{initial_label}")
 OUTPUT_DIR    = Path(f"visualisation/pymol_rendered_cmap/{label_out}")
 CSV_PATH      = Path(f"visualisation/{initial_label}/all_spins.csv")

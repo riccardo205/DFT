@@ -161,7 +161,7 @@ Grid.CellSampling        3 3 3
 # Solution Method
 # ---------------
 SolutionMethod		diagon
-ElectronicTemperature	300 K	
+ElectronicTemperature	1 K	
 
 # ---
 # SCF
@@ -182,10 +182,10 @@ SaveHS                   T
 # MD
 # --
 MD.TypeOfRun   	        CG  
-MD.Steps                500
+MD.Steps                0
 MD.MaxCGDispl           0.01 Ang #0.02 Ang
 MD.UseSaveXV            T
-MD.MaxForceTol          0.05 eV/Ang
+MD.MaxForceTol          0.01 eV/Ang
 #MD.MaxStressTol         0.0001 GPa
 #MD.TargetPressure       0.0001 GPa
 

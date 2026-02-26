@@ -101,7 +101,7 @@ def save_all_spins(rows, path):
 
 # ─── DIRECTORY WALK ────────────────────────────────────────────────────────────
 dir_runs = "/Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/Short-2OS/runs/"
-run      = "junction_SM/fast"  # Change this to your specific run folder
+run      = "junction_SM2/slow"  # Change this to your specific run folder
 base     = Path(dir_runs) / run
 
 summary_rows = []

@@ -15,7 +15,7 @@ import re
 import os
 
 run_label = "junction_SM"  # subfolder in Short-2OS/runs/ and visualisation/
-fast_slow = "fast"    # subfolder for fast or slow screening
+fast_slow = "conf_4"    # subfolder for fast or slow screening
 INFILE  = f"visualisation/{run_label}/{fast_slow}/summary_results.csv"
 OUTFILE = f"visualisation/latex_tables/{run_label}/{fast_slow}/{run_label}_latex.tex"
 

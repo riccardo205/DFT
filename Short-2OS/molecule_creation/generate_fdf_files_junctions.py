@@ -5,7 +5,7 @@ from rdkit import Chem
 HERE = Path(__file__).resolve().parent
 
 # Configuration
-filename = "junction_SM"  # Base name for output files
+filename = "junction_SM2"  # Base name for output files
 slow_fast = "fast"  # Slow or fast FDF generation
 label_out = "" #"_4radicals"  # Optional label for output directory
 
