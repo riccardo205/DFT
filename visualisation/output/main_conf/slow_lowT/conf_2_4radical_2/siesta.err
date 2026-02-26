@@ -1,0 +1,5 @@
+slurmstepd: error: *** STEP 8604112.0 ON cmp164 CANCELLED AT 2025-11-21T10:36:11 DUE TO TIME LIMIT ***
+srun: Job step aborted: Waiting up to 122 seconds for job step to finish.
+srun: error: cmp167: tasks 10-15: Terminated
+srun: launch/slurm: _step_signal: Terminating StepId=8604112.0
+slurmstepd: error: *** JOB 8604112 ON cmp164 CANCELLED AT 2025-11-21T10:36:11 DUE TO TIME LIMIT ***
