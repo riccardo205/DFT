@@ -30,7 +30,7 @@ def xyz_dir_to_sdf(xyz_dir: str, sdf_path: str):
 
 if __name__ == "__main__":
     # Set input/output paths here
-    xyz_folder = "Gold_electrodes/main_conf/junctions_2"  # Folder containing .xyz files
-    output_sdf = "sdf_files/junction_SM2.sdf"
+    xyz_folder = "Gold_electrodes/main_conf/junction_SM_test"  # Folder containing .xyz files
+    output_sdf = "sdf_files/junction_SM_test.sdf"
 
     xyz_dir_to_sdf(xyz_folder, output_sdf)

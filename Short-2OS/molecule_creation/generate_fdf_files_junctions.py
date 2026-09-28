@@ -5,17 +5,17 @@ from rdkit import Chem
 HERE = Path(__file__).resolve().parent
 
 # Configuration
-filename = "junction_SM2"  # Base name for output files
+filename = "junction_SM_conformers"  # Base name for output files
 slow_fast = "fast"  # Slow or fast FDF generation
 label_out = "" #"_4radicals"  # Optional label for output directory
 
-template_fdf = HERE / 'templates_fdf' / f'template_{filename}_{slow_fast}.fdf'     # Path to your FDF template
+template_fdf = HERE / 'templates_fdf' / f'template_junction_SM_{slow_fast}.fdf'     # Path to your FDF template
 conformers_sdf = HERE / 'sdf_files' / f'{filename}.sdf' # Multi‐conformer SDF
 output_dir = HERE / 'fdf_files' / filename / f'{slow_fast}{label_out}'     # Directory to save new FDFs
 os.makedirs(output_dir, exist_ok=True)
 
 # Dimension bounds (Angstrom)
-x_bound, y_bound, z_bound = 45.0, 35.0, 25.0
+x_bound, y_bound, z_bound = 35.0, 21.0, 20.0
 
 # Read the template
 with open(template_fdf) as f:
@@ -94,14 +94,14 @@ atomic_to_species = {6: 1, 1: 2, 79: 3}  # C:1, H:2, Au:3
 #         "%endblock DM.InitSpin\n"
 #     ]
 # }
-spin_variants = {'antiferro': [
+spin_variants = {'ferro': [
         "# --\n",
         "# SPINS\n",
         "# --\n",
         "Spin  polarized\n",
         "%block DM.InitSpin\n",
         "   29  1.0\n",
-        "   42 -1.0\n",
+        "   42  1.0\n",
         "%endblock DM.InitSpin\n"
     ],
 }

@@ -234,30 +234,82 @@ if __name__ == "__main__":
     # IMPORTANT: indices here are 1-based!
     import sys
     from pathlib import Path
-    sys.path.insert(0, str(Path(__file__)))
+    sys.path.insert(0, str(Path(__file__).parent))
+
+    # --- Configuration ---
+    mol_folder   = Path("/Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/Short-2OS/runs/main_conf/slow_lowT_lowest_forces")        # folder with molecule xyz files
+    out_folder   = Path("main_conf/junction_SM_test")     # output folder
+    left_path    = "Au_electrodes_relaxed/right.xyz"
+    right_path   = "Au_electrodes_relaxed/right.xyz"
+
+    mol_end1     = (59, 56, 42)       #(59, 56,) anchoring atoms at one end (1-based)
+    mol_end2     = (66, 70, 29)       #(66, 70) anchoring atoms at other end (1-based)
+    L_tip        = (1,6,11) ## (1,)
+    R_tip        = (1,6, 11) ## (1,)
+    L_plane_atoms = (20, 16) ##(11, 20, 17)
+    R_plane_atoms = (20, 16) ##(11, 20, 17)
+    gap          = 2.3
+    # ---------------------
+
+    out_folder.mkdir(parents=True, exist_ok=True)
+
+    mol_files = [
+        xyz
+        for antidir in mol_folder.iterdir()
+        if antidir.is_dir() and antidir.name.endswith("antiferro")
+        for xyz in antidir.glob("*.xyz")
+    ]
+
+    print(mol_files)
     
-    gap_list = np.linspace(1.0, 3.0, num=21) 
-    print(f"Gap list: {gap_list}")
+    # mol_files = sorted(mol_folder.glob("*.xyz"))
     
-    for i, gap in enumerate(gap_list, start=1):
+    if not mol_files:
+        print(f"No .xyz files found in {mol_folder}")
+        sys.exit(1)
+
+    for i, mol_path in enumerate(mol_files, start=1):
+        out_path = out_folder / f"junction_{i}.xyz"
+        print(f"Building junction for {mol_path.name} -> {out_path.name}")
         build_junction(
-            mol_path="main_conf/molecule/short-2OS.xyz",
-            left_path="Au_electrodes_relaxed/right.xyz",
-            right_path="Au_electrodes_relaxed/right.xyz",
-            out_path=f"main_conf/junctions_2/conf_{i}.xyz",
-
-            # EXAMPLES (replace with yours)
-            mol_end1=(59,56),           # e.g. anchoring atom at one end
-            mol_end2=(66,70),          # anchoring atom at other end
-
-            L_tip=(1,),
-            R_tip=(1,),
-
-            L_plane_atoms=(11, 20, 17),   # atoms on the plane away from tip
-            R_plane_atoms=(11, 20, 17),
-
+            mol_path=str(mol_path),
+            left_path=left_path,
+            right_path=right_path,
+            out_path=str(out_path),
+            mol_end1=mol_end1,
+            mol_end2=mol_end2,
+            L_tip=L_tip,
+            R_tip=R_tip,
+            L_plane_atoms=L_plane_atoms,
+            R_plane_atoms=R_plane_atoms,
             gap_L=gap,
             gap_R=gap,
-            junction_axis=(1.0, 0.0, 0.0), #(1.0, 0.0, 0.0)
-        
+            junction_axis=(1.0, 0.0, 0.0),
         )
+
+    print("Done.")
+
+    # --- Old version: gap sweep over a single molecule ---
+    # gap_list = np.linspace(1.0, 3.0, num=21)
+    # print(f"Gap list: {gap_list}")
+    #
+    # for i, gap in enumerate(gap_list, start=1):
+    #     build_junction(
+    #         mol_path="main_conf/molecule/short-2OS.xyz",
+    #         left_path="Au_electrodes_relaxed/right.xyz",
+    #         right_path="Au_electrodes_relaxed/right.xyz",
+    #         out_path=f"main_conf/junctions_2/conf_{i}.xyz",
+    #
+    #         mol_end1=(59, 56),
+    #         mol_end2=(66, 70),
+    #
+    #         L_tip=(1,),
+    #         R_tip=(1,),
+    #
+    #         L_plane_atoms=(11, 20, 17),
+    #         R_plane_atoms=(11, 20, 17),
+    #
+    #         gap_L=gap,
+    #         gap_R=gap,
+    #         junction_axis=(1.0, 0.0, 0.0),
+    #     )

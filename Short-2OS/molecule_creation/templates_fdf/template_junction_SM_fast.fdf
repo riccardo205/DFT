@@ -14,7 +14,7 @@ NumberOfSpecies     3                                # how many different type o
 # ----------------
 # BASIS DEFINITION
 # ----------------
-PAO.EnergyShift   5 meV
+PAO.EnergyShift   10 meV
 PAO.Splitnorm     0.15
 PAO.SplitnormH    0.5
 
@@ -43,9 +43,9 @@ Au                    3  # Species label, number of l-shells
 # ----------------------
 LatticeConstant     1.0 Ang
 %block LatticeVectors
-   50.000000    0.000000    0.000000
-    0.000000   25.000000    0.000000
-    0.000000    0.000000   25.000000
+   45.000000    0.000000    0.000000
+    0.000000   35.000000    0.000000
+    0.000000    0.000000   35.000000
 %endblock LatticeVectors
 
 AtomicCoordinatesFormat Ang
@@ -154,14 +154,14 @@ DFTD3.BJdamping     T
 # ----
 # GRID
 # ----
-MeshCutoff 		500 Ry
+MeshCutoff 		300 Ry
 Grid.CellSampling        3 3 3
 
 # ---------------
 # Solution Method
 # ---------------
 SolutionMethod		diagon
-ElectronicTemperature	1 K	
+ElectronicTemperature	300 K	
 
 # ---
 # SCF
@@ -182,10 +182,10 @@ SaveHS                   T
 # MD
 # --
 MD.TypeOfRun   	        CG  
-MD.Steps                0
-MD.MaxCGDispl           0.01 Ang #0.02 Ang
+MD.Steps                1500
+MD.MaxCGDispl           0.05 Ang #0.02 Ang
 MD.UseSaveXV            T
-MD.MaxForceTol          0.01 eV/Ang
+MD.MaxForceTol          0.02 eV/Ang
 #MD.MaxStressTol         0.0001 GPa
 #MD.TargetPressure       0.0001 GPa
 
