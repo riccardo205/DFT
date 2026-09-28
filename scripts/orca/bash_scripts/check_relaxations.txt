@@ -1,0 +1,98 @@
+#!/bin/bash
+
+printf "%-55s %-12s %-12s %-20s %-12s\n" \
+    "CALCULATION" "STATUS" "RUNTIME" "LAST ENERGY (Eh)" "RELAXED?"
+printf "%s\n" "$(printf '=%.0s' {1..120})"
+
+find . -type f -name "*.inp" | sort | while read -r inp; do
+
+    dir=$(dirname "$inp")
+    base=$(basename "$inp" .inp)
+    out="$dir/$base.out"
+    jobfile="$dir/job_id.txt"
+
+    status="NOT STARTED"
+    runtime="-"
+    energy="-"
+    relaxed="-"
+
+    # ---------------------------------------------------------
+    # Output exists -> calculation has at least started
+    # ---------------------------------------------------------
+    if [ -f "$out" ]; then
+
+        status="STARTED"
+
+        # Last available SCF energy
+        energy=$(grep "FINAL SINGLE POINT ENERGY" "$out" \
+            | tail -1 \
+            | awk '{print $5}')
+
+        [ -z "$energy" ] && energy="-"
+
+        # Geometry convergence
+        if grep -qi "THE OPTIMIZATION HAS CONVERGED" "$out"; then
+            relaxed="YES"
+        elif grep -qi "optimization has not yet converged" "$out"; then
+            relaxed="NO"
+        else
+            relaxed="NO"
+        fi
+
+        # Finished normally?
+        if grep -q "ORCA TERMINATED NORMALLY" "$out"; then
+            status="FINISHED"
+
+            # Get ORCA-reported total runtime
+            runtime=$(grep "TOTAL RUN TIME" "$out" \
+                | tail -1 \
+                | sed 's/.*TOTAL RUN TIME: *//')
+
+            [ -z "$runtime" ] && runtime="-"
+        fi
+    fi
+
+    # ---------------------------------------------------------
+    # Check Slurm if job_id.txt exists
+    # ---------------------------------------------------------
+    if [ -f "$jobfile" ]; then
+
+        jobid=$(tr -d '[:space:]' < "$jobfile")
+
+        if [ -n "$jobid" ]; then
+
+            slurm_info=$(squeue -h -j "$jobid" -o "%T|%M" 2>/dev/null)
+
+            if [ -n "$slurm_info" ]; then
+                slurm_state=${slurm_info%%|*}
+                runtime=${slurm_info#*|}
+
+                case "$slurm_state" in
+                    RUNNING)
+                        status="RUNNING"
+                        ;;
+                    PENDING)
+                        status="PENDING"
+                        ;;
+                    *)
+                        status="$slurm_state"
+                        ;;
+                esac
+            fi
+        fi
+    fi
+
+    # ---------------------------------------------------------
+    # Output exists but neither active nor normally terminated
+    # ---------------------------------------------------------
+    if [ -f "$out" ] \
+        && [ "$status" = "STARTED" ]; then
+        status="INCOMPLETE"
+    fi
+
+    calc="${dir#./}/$base"
+
+    printf "%-55s %-12s %-12s %-20s %-12s\n" \
+        "$calc" "$status" "$runtime" "$energy" "$relaxed"
+
+done

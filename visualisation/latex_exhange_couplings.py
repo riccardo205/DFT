@@ -58,9 +58,11 @@ import math
 
 run_label = "dimers_run2"  # subfolder in Short-2OS/runs/ and visualisation/
 fast_slow = "slow_lowT_lowest_forces"    # subfolder for fast or slow screening
-INFILE  = f"visualisation/{run_label}/{fast_slow}/summary_results.csv"
+INFILE  = f"visualisation/output/{run_label}/{fast_slow}/summary_results.csv"
 OUTFILE_2SPIN = f"visualisation/latex_tables/{run_label}/{fast_slow}/{run_label}_exchange_2spin.tex"
 OUTFILE_4SPIN = f"visualisation/latex_tables/{run_label}/{fast_slow}/{run_label}_exchange_4spin.tex"
+OUTFILE_2SPIN_CSV = f"visualisation/latex_tables/{run_label}/{fast_slow}/{run_label}_exchange_2spin.csv"
+OUTFILE_4SPIN_CSV = f"visualisation/latex_tables/{run_label}/{fast_slow}/{run_label}_exchange_4spin.csv"
 
 # Mode: 2 or 4 spins
 SPIN_NR = 4
@@ -384,3 +386,32 @@ with open(outfile, "w", encoding="utf-8") as tex:
     tex.write(r"\end{longtable}")
 
 print(f"✔  LaTeX written to {outfile}")
+
+# Write CSV output with all data
+# For CSV, convert energy values from eV to meV for easier readability
+out_csv = out.copy()
+
+if SPIN_NR == 2:
+    csv_outfile = OUTFILE_2SPIN_CSV
+    # Convert J from eV to meV
+    out_csv["J_meV"] = out_csv["J"] * 1000
+    # Select columns for CSV
+    csv_columns = ["Config", "E_lower", "J_meV", "F_lower", "Residual"]
+    out_csv_export = out_csv[csv_columns].rename(columns={"J_meV": "J (meV)"})
+    
+elif SPIN_NR == 4:
+    csv_outfile = OUTFILE_4SPIN_CSV
+    j_cols = ['J_12', 'J_13', 'J_14', 'J_23', 'J_24', 'J_34']
+    # Convert J from eV to meV
+    for j_col in j_cols:
+        out_csv[f"{j_col}_meV"] = out_csv[j_col] * 1000
+    
+    j_meV_cols = [f"{j}_meV" for j in j_cols]
+    # Select columns for CSV: Config, E_lower, all J values in meV, F_lower, E0, Residual, rank
+    csv_columns = ["Config", "E_lower"] + j_meV_cols + ["F_lower", "_E0", "Residual", "_rank"]
+    j_meV_rename = {f"{j}_meV": f"{j} (meV)" for j in j_cols}
+    out_csv_export = out_csv[csv_columns].rename(columns={**j_meV_rename, "_E0": "E0 (eV)", "Residual": "Residual (eV)", "_rank": "Rank"})
+
+os.makedirs(os.path.dirname(csv_outfile) or ".", exist_ok=True)
+out_csv_export.to_csv(csv_outfile, index=False)
+print(f"✔  CSV written to {csv_outfile}")

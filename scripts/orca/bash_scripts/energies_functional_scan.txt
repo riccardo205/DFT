@@ -1,0 +1,31 @@
+for functional in pbe r2scan b3lyp pbe0 r2scan0 cam_b3lyp; do
+
+    bs_file="${functional}/broken_symmetry/broken_symmetry.out"
+    hs_file="${functional}/high_spin/high_spin.out"
+
+    bs=$(grep "FINAL SINGLE POINT ENERGY" "$bs_file" 2>/dev/null | tail -1 | awk '{print $5}')
+    hs=$(grep "FINAL SINGLE POINT ENERGY" "$hs_file" 2>/dev/null | tail -1 | awk '{print $5}')
+
+    echo "$functional"
+
+    printf "  %-18s %s Eh\n" "broken_symmetry" "${bs:-NO_ENERGY}"
+    printf "  %-18s %s Eh\n" "high_spin" "${hs:-NO_ENERGY}"
+
+    if [ -n "$bs" ] && [ -n "$hs" ]; then
+
+        delta_eh=$(awk -v hs="$hs" -v bs="$bs" \
+            'BEGIN {printf "%.12f", hs-bs}')
+
+        delta_mev=$(awk -v hs="$hs" -v bs="$bs" \
+            'BEGIN {printf "%.4f", (hs-bs)*27211.386245988}')
+
+        printf "  %-18s %s Eh  =  %s meV\n" \
+            "ΔE (HS - BS)" "$delta_eh" "$delta_mev"
+
+    else
+        printf "  %-18s %s\n" "ΔE (HS - BS)" "N/A"
+    fi
+
+    echo
+
+done

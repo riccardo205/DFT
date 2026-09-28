@@ -1,0 +1,27 @@
+{
+    "pbe_sv": {
+        "keywords": [
+            "PBE",
+            "def2-SVP",
+            "TightSCF"
+        ],
+        "max_iter": 300
+    },
+    "pbe_tzvp": {
+        "keywords": [
+            "PBE",
+            "def2-TZVP",
+            "TightSCF"
+        ],
+        "max_iter": 300
+    },
+
+    "pbe0_tzvp": {
+        "keywords": [
+            "PBE0",
+            "def2-TZVP",
+            "TightSCF"
+        ],
+        "max_iter": 300
+    }
+}

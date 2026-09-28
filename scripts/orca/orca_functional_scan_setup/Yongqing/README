@@ -1,0 +1,45 @@
+- geometry.xyz is a molecule configuration in free space that was relaxed in siesta PBE GGA
+- relaxed_main_conf_4.xyz is after the relaxation with ORCA using R2SCAN-3C TightSCF Tight. I'm currently running the functional_scan analysis on this geometry (hoping to get ferromagnetic ground state)
+
+
+From running geometry.xyz I get that the energies are as follows:
+
+pbe
+  broken_symmetry    -2075.116418045908 Eh
+  high_spin          -2075.116394214763 Eh
+  ΔE (HS - BS)       0.000023831145 Eh  =  0.6485 meV
+
+r2scan
+  broken_symmetry    -2076.605937530752 Eh
+  high_spin          -2076.605840766440 Eh
+  ΔE (HS - BS)       0.000096764312 Eh  =  2.6331 meV
+
+b3lyp
+  broken_symmetry    -2076.441186991280 Eh
+  high_spin          -2076.441145548622 Eh
+  ΔE (HS - BS)       0.000041442658 Eh  =  1.1277 meV
+
+pbe0
+  broken_symmetry    -2075.281425081102 Eh
+  high_spin          -2075.281357805090 Eh
+  ΔE (HS - BS)       0.000067276012 Eh  =  1.8307 meV
+
+r2scan0
+  broken_symmetry    -2076.353180635525 Eh
+  high_spin          -2076.352768065251 Eh
+  ΔE (HS - BS)       0.000412570274 Eh  =  11.2266 meV
+
+cam_b3lyp
+  broken_symmetry    -2076.537696701726 Eh
+  high_spin          -2076.537587831526 Eh
+  ΔE (HS - BS)       0.000108870200 Eh  =  2.9625 meV
+
+
+The radiclas are consistently antiferromagnetically coupled (broken symmetry) for all functionals.
+The radical sites tend to be more localized (higher Mulliken spin density) when increasing the complexity of teh functional. 
+I would not take r2scan0 too seriously because S^2 differs too much from teh expected value (2 for high spin and 1 for broken symmetry).
+
+Next steps: 
+- Check results relaxed_main_conf_4
+- Run molecule with electrodes where the electrodes are not free to move
+- (Maybe) calculate teh energy versus the internal angles of the molecule

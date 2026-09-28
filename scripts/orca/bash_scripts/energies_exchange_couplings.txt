@@ -1,0 +1,47 @@
+#!/bin/bash
+
+for dir in */; do
+
+    folder="${dir%/}"
+
+    bs_file="${folder}/breaking_symmetry/breaking_symmetry.out"
+    hs_file="${folder}/high_spin/high_spin.out"
+
+    # Skip folders that contain neither calculation
+    if [ ! -f "$bs_file" ] && [ ! -f "$hs_file" ]; then
+        continue
+    fi
+
+    bs=$(grep "FINAL SINGLE POINT ENERGY" "$bs_file" 2>/dev/null \
+        | tail -1 | awk '{print $5}')
+
+    hs=$(grep "FINAL SINGLE POINT ENERGY" "$hs_file" 2>/dev/null \
+        | tail -1 | awk '{print $5}')
+
+    echo "$folder"
+
+    printf "  %-18s %s Eh\n" \
+        "breaking_symmetry" "${bs:-NO_ENERGY}"
+
+    printf "  %-18s %s Eh\n" \
+        "high_spin" "${hs:-NO_ENERGY}"
+
+    if [ -n "$bs" ] && [ -n "$hs" ]; then
+
+        delta_eh=$(awk -v hs="$hs" -v bs="$bs" \
+            'BEGIN {printf "%.12f", hs-bs}')
+
+        delta_mev=$(awk -v hs="$hs" -v bs="$bs" \
+            'BEGIN {printf "%.4f", (hs-bs)*27211.386245988}')
+
+        printf "  %-18s %s Eh  =  %s meV\n" \
+            "ΔE (HS - BS)" "$delta_eh" "$delta_mev"
+
+    else
+        printf "  %-18s %s\n" \
+            "ΔE (HS - BS)" "N/A"
+    fi
+
+    echo
+
+done

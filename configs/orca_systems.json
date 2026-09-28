@@ -1,0 +1,20 @@
+{
+    "short-2OS": {
+        "charge": 0,
+
+        "high_spin_multiplicity": 3,
+
+        "broken_symmetry_final_ms": 0,
+
+        "radical_atoms": [
+            28,
+            41
+        ],
+
+        "flip_atoms": [
+            28
+        ],
+
+        "minimum_high_spin_population": 0.20
+    }
+}

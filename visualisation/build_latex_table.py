@@ -14,9 +14,9 @@ import pandas as pd
 import re
 import os
 
-run_label = "junction_SM"  # subfolder in Short-2OS/runs/ and visualisation/
-fast_slow = "conf_4"    # subfolder for fast or slow screening
-INFILE  = f"visualisation/{run_label}/{fast_slow}/summary_results.csv"
+run_label = "junction_SM_conformers"  # subfolder in Short-2OS/runs/ and visualisation/
+fast_slow = "slow_FM_AFM"    # subfolder for fast or slow screening
+INFILE  = f"visualisation/output/{run_label}/{fast_slow}/summary_results.csv"
 OUTFILE = f"visualisation/latex_tables/{run_label}/{fast_slow}/{run_label}_latex.tex"
 
 # ----------------------------------------------------------------------
@@ -44,7 +44,12 @@ df = df.dropna(subset=["E_final"])
 
 # clean numeric columns
 df["F_final"]  = pd.to_numeric(df["F_final"],  errors="coerce")
-df["DM_steps"] = pd.to_numeric(df["DM_steps"], errors="coerce", downcast="integer")
+# accept either 'DM_steps' or legacy 'DM_step' — coerce or create NA column
+df["DM_steps"] = pd.to_numeric(
+    df.get("DM_steps", df.get("DM_step", pd.Series([pd.NA] * len(df), index=df.index))),
+    errors="coerce",
+    downcast="integer",
+)
 
 # # prepare the cleaned spin list
 # df["Spin_clean"] = df["Spin_final_list"].apply(clean_spin_list)
