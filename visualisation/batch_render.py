@@ -5,11 +5,11 @@ from pathlib import Path
 import pymol2
 
 # ─── 1) USER CONFIG ────────────────────────────────────────────────────────────
-initial_label = "dimers_run2/non_colinear_fast2"
-label_out     = "dimers_run2/non_colinear_fast2"
+initial_label = "junction_SM2/slow_2026_03_13_vs2"
+label_out     = "junction_SM2/slow_2026_03_13_vs2"
 ROOT_DIR      = Path(f"Short-2OS/runs/{initial_label}")
 OUTPUT_DIR    = Path(f"visualisation/pymol_rendered_cmap/{label_out}")
-CSV_PATH      = Path(f"visualisation/{initial_label}/all_spins.csv")
+CSV_PATH      = Path(f"visualisation/output/{initial_label}/all_spins.csv")
 ROTATIONS     = [("x", 0),("y", 0)]  # e.g. [("y", 90)] to rotate camera before saving
 PNG_WIDTH     = 800
 PNG_DPI       = 500
