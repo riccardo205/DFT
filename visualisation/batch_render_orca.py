@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import sys
 import re
+import tempfile
 from pathlib import Path
 import pymol2
 
 # ─── 1) USER CONFIG ────────────────────────────────────────────────────────────
 REPO_ROOT  = Path(__file__).resolve().parent.parent
-ROOT_DIR   = REPO_ROOT / "runs" / "orca" / "short-2OS" / "angle_scan" 
-OUTPUT_DIR = REPO_ROOT / "visualisation" / "pymol_rendered_cmap" / "orca" / "angle_scan"
+ROOT_DIR   = REPO_ROOT / "runs" / "orca" / "short-2OS" / "dimers_run2" / "run2_broken_symmetry" / "relaxed" /"conf_11"
+OUTPUT_DIR = REPO_ROOT / "visualisation" / "pymol_rendered_cmap" / "orca" / "dimers_run2" / "run2_broken_symmetry" / "conf_11"
 ROTATIONS  = [("x", 0), ("y", 0)]  # e.g. [("y", 90)] to rotate camera before saving
 PNG_WIDTH  = 800
 PNG_DPI    = 500
@@ -19,20 +20,34 @@ MULLIKEN_BLOCK_RE = re.compile(
     re.S,
 )
 ATOM_LINE_RE = re.compile(r"\s*(\d+)\s+(\S+)\s*:\s*(-?\d+\.\d+)\s+(-?\d+\.\d+)")
+COORD_BLOCK_RE = re.compile(
+    r"CARTESIAN COORDINATES \(ANGSTROEM\)\s*\n-+\n((?:\s*[A-Z][a-z]?\s+-?\d+\.\d+\s+-?\d+\.\d+\s+-?\d+\.\d+\s*\n)+)"
+)
+ORCA_HEADER = "O   R   C   A"
+AUX_OUT_RE = re.compile(r"(_atom\d+|^slurm)\.out$")   # ORCA per-atom outputs, slurm logs
+
+
+def is_orca_main_output(out_file: Path):
+    """True for an ORCA main output: either it has a sibling .inp with the same stem, or (for
+    .out files copied on their own, e.g. selected_out_files/<dimer>/uuuu.out) it starts with the
+    ORCA banner. ORCA's per-atom auxiliary outputs ("high_spin_atom79.out") and slurm logs are
+    always skipped."""
+    if AUX_OUT_RE.search(out_file.name):
+        return False
+    if out_file.with_suffix(".inp").exists():
+        return True
+    with out_file.open(errors="ignore") as fh:
+        return ORCA_HEADER in fh.read(4000)
 
 
 def find_orca_jobs(root: Path):
     """
-    Recursively find ORCA output files under root. A .out file is only kept if a
-    sibling .inp with the same stem exists (this filters out ORCA's auxiliary
-    per-atom outputs, e.g. "high_spin_atom79.out", and any flat folders of .out
-    files copied back without their .inp/.xyz siblings).
+    Recursively find ORCA main output files under root, at any depth: root can be one
+    calculation folder, a folder of calculation folders (e.g. <dimer>/<config>/), or deeper
+    trees (<run>/<stage>/<dimer>/<config>/). Natural order: conf_2 before conf_10.
     """
-    jobs = []
-    for out_file in sorted(root.rglob("*.out")):
-        if out_file.with_suffix(".inp").exists():
-            jobs.append(out_file)
-    return jobs
+    natural = lambda p: [int(t) if t.isdigit() else t for t in re.split(r"(\d+)", str(p))]
+    return [p for p in sorted(root.rglob("*.out"), key=natural) if is_orca_main_output(p)]
 
 
 def parse_final_spin_populations(out_text: str):
@@ -58,23 +73,35 @@ def parse_final_spin_populations(out_text: str):
     return spins
 
 
-def find_geometry_file(out_file: Path):
+def find_geometry(out_file: Path, out_text: str):
     """
-    Pick the geometry to render:
+    Geometry to render, as (description, xyz text):
       - relaxation jobs: ORCA writes "<stem>.xyz" with the final (or last
         completed, if not converged) optimized Cartesian coordinates.
       - single-point jobs (functional scan, field scan, ...): geometry never
         changes, so fall back to the input "geometry.xyz".
+      - .out copied without its folder (no .xyz next to it): the LAST
+        "CARTESIAN COORDINATES (ANGSTROEM)" block of the output itself, i.e. the
+        final geometry of a relaxation or the geometry of a single point.
+    Returns (None, None) if nothing is found.
     """
     optimized = out_file.with_suffix(".xyz")
     if optimized.exists():
-        return optimized
+        return optimized.name, optimized.read_text()
 
+    # geometry.xyz belongs to this job only in a real calculation folder (sibling .inp);
+    # in a flat folder of copied outputs it could belong to another job
     geometry = out_file.parent / "geometry.xyz"
-    if geometry.exists():
-        return geometry
+    if geometry.exists() and out_file.with_suffix(".inp").exists():
+        return geometry.name, geometry.read_text()
 
-    return None
+    blocks = COORD_BLOCK_RE.findall(out_text)
+    if blocks:
+        lines = [ln.split() for ln in blocks[-1].strip().splitlines()]
+        xyz = f"{len(lines)}\n{out_file.name}\n" + "\n".join(" ".join(ln) for ln in lines) + "\n"
+        return "coordinates in .out", xyz
+
+    return None, None
 
 
 def color_by_spin_colormap(cmd, model_name, spins):
@@ -138,19 +165,21 @@ def main(root: Path, out: Path):
             relative = out_file.relative_to(root).with_suffix("")
             name = str(relative).replace("/", "_")
 
-            geometry_file = find_geometry_file(out_file)
-            if geometry_file is None:
-                print(f"[!] No geometry (.xyz) found for {out_file}, skipping.")
+            out_text = out_file.read_text(errors="ignore")
+            geometry_source, xyz_text = find_geometry(out_file, out_text)
+            if xyz_text is None:
+                print(f"[!] No geometry (.xyz or coordinates in the .out) for {out_file}, skipping.")
                 continue
 
-            spins = parse_final_spin_populations(
-                out_file.read_text(errors="ignore")
-            )
+            spins = parse_final_spin_populations(out_text)
             if not spins:
                 print(f"[!] No Mulliken spin populations found in {out_file}")
 
             cmd.set_view(base_view)
-            cmd.load(str(geometry_file), name)
+            with tempfile.NamedTemporaryFile("w", suffix=".xyz", delete=False) as tmp:
+                tmp.write(xyz_text)
+            cmd.load(tmp.name, name, format="xyz")
+            Path(tmp.name).unlink()
             cmd.show("sticks", name)
             cmd.show("spheres", name)
             cmd.set("sphere_scale", 0.20)
@@ -162,8 +191,8 @@ def main(root: Path, out: Path):
 
             color_by_spin_colormap(cmd, name, spins)
 
-            out_png = out / relative.with_suffix(".png")
-            save_png(cmd, name, out_png, width=PNG_WIDTH, dpi=PNG_DPI)
+            out_png = out / relative.with_suffix(".png")       # same folder structure as under root
+            save_png(cmd, f"{name} (geometry: {geometry_source})", out_png, width=PNG_WIDTH, dpi=PNG_DPI)
             cmd.delete(name)
 
 

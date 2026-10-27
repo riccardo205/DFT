@@ -1,0 +1,9 @@
+numpy>=1.24
+pandas>=1.5
+scikit-image>=0.21
+pyvista>=0.42
+vtk>=9.2
+matplotlib>=3.7
+pillow>=9.0
+# optional: run the tests with pytest instead of unittest
+# pytest

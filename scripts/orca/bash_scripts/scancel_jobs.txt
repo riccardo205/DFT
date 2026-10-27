@@ -1,0 +1,6 @@
+
+# Cancel all jobs
+scancel -u $USER
+
+# Cancel pending jobs
+squeue -u $USER -t PD -h -o "%A" | xargs scancel

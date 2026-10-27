@@ -84,8 +84,8 @@ def main():
             "guess_mix": False,
         },
         {
-            "folder": "breaking_symmetry",
-            "input_name": "breaking_symmetry.inp",
+            "folder": "broken_symmetry",
+            "input_name": "broken_symmetry.inp",
             "multiplicity": 1,
             "guess_mix": True,
         },

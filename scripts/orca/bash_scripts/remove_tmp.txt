@@ -1,1 +1,4 @@
 find . -type f \( -name "*.tmp" -o -name "*.tmp.*" \) -delete
+
+
+find . -type f -name '*.densities' -print -delete | wc -l

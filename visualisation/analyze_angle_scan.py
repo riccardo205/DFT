@@ -13,6 +13,9 @@ Organized around 7 scientific questions (see angle_scan.md section headers):
   6. correlation between terminal spin localization and AFM HS-BS exchange
      (scaffold only until the separate PBE0 HS/BS single points exist)
   7. any geometry where the triplet becomes competitive with/lower than BS
+
+Exchange quantities: DeltaE = E_HS - E_BS (column delta_E_exchange_meV; > 0: BS lower). J in the
+repository convention H = -J S1.S2 (J > 0 FM) is computed in analyze_exchange.py via exchange_convention.py.
 """
 
 import re
@@ -320,15 +323,20 @@ def check_chemical_integrity(atoms, bonds, bonded_pairs, bond_delta_tol, bond_ab
         dmat[j, i] = np.inf
     min_dist = float(dmat.min())
     i, j = (int(x) for x in np.unravel_index(np.argmin(dmat), dmat.shape))
-    clash = min_dist < min_nonbonded_dist
-    if clash:
-        reasons.append(f"non-bonded clash: atoms {i}-{j} at {min_dist:.3f} Å")
 
-    is_valid = (len(broken_bonds) == 0) and (not clash)
+    clash_pairs = {
+        (int(a), int(b)) for a, b in zip(*np.where(np.triu(dmat < min_nonbonded_dist, k=1)))
+    }
+    for a, b in sorted(clash_pairs):
+        reasons.append(f"non-bonded clash: atoms {a}-{b} at {dmat[a, b]:.3f} Å")
+
+    broken_bond_pairs = {(bi, bj) for bi, bj, _, _ in broken_bonds}
     return {
-        "valid": is_valid,
-        "bond_broken": len(broken_bonds) > 0,
-        "clash": clash,
+        "valid": (len(broken_bond_pairs) == 0) and (len(clash_pairs) == 0),
+        "bond_broken": len(broken_bond_pairs) > 0,
+        "clash": len(clash_pairs) > 0,
+        "broken_bond_pairs": broken_bond_pairs,
+        "clash_pairs": clash_pairs,
         "reasons": reasons,
         "min_nonbonded_distance": min_dist,
         "min_nonbonded_pair": (i, j),
@@ -443,6 +451,18 @@ def cross_fragment_min_distance(pos, symbols, frag_a, frag_b, heavy_only):
     return float(sub[ia, ib]), (idx_a[ia], idx_b[ib])
 
 
+def cross_fragment_contact_stats(pos, symbols, frag_a, frag_b, n_shortest, cutoff):
+    """
+    Robust heavy-atom packing descriptors between two fragments, less fragile
+    than a single minimum distance: mean of the `n_shortest` shortest
+    heavy-atom pair distances, and the number of pairs closer than `cutoff`.
+    """
+    idx_a = [i for i in frag_a if symbols[i] != "H"]
+    idx_b = [i for i in frag_b if symbols[i] != "H"]
+    dists = np.sort(np.linalg.norm(pos[idx_a][:, None, :] - pos[idx_b][None, :, :], axis=-1).ravel())
+    return float(dists[:n_shortest].mean()), int((dists < cutoff).sum())
+
+
 def pearson_r(x, y):
     x = np.asarray(x, dtype=float)
     y = np.asarray(y, dtype=float)
@@ -474,6 +494,18 @@ def main():
     BOND_STRETCH_TOL_ANG = 0.30
     BOND_ABS_MAX_ANG = 1.9
     MIN_NONBONDED_DIST_ANG = 1.5
+
+    # Robust 1-3 / 2-4 packing descriptors
+    N_SHORTEST_CONTACTS = 3
+    CONTACT_CUTOFF_ANG = 4.0
+
+    # A jump in energy + spin between grid neighbors is NOT called an
+    # electronic/SCF branch change if the two structures also differ strongly
+    # in these structural-accommodation descriptors (then the change has a
+    # structural explanation).
+    STRUCTURAL_JUMP_PLANE_ANGLE_DEG = 8.0
+    STRUCTURAL_JUMP_PLANARITY_RMS_ANG = 0.02
+    STRUCTURAL_JUMP_TILT_DEG = 3.0
 
     ENERGY_DISCONTINUITY_FACTOR = 2.5
     ENERGY_DISCONTINUITY_FLOOR_MEV = 20.0
@@ -567,6 +599,7 @@ def main():
 
         # ---- Chemical integrity: BOTH initial and final geometry ----
         initial_atoms = None
+        initial_broken_bonds, initial_clashes = set(), set()
         if geometry_file.exists():
             try:
                 g0, initial_atoms = analyze_geometry(geometry_file, CENTER, left_ring, right_ring)
@@ -575,6 +608,9 @@ def main():
                 chk0 = check_chemical_integrity(initial_atoms, bonds, bonded_pairs, BOND_STRETCH_TOL_ANG, BOND_ABS_MAX_ANG, MIN_NONBONDED_DIST_ANG)
                 row["initial_geometry_valid"] = chk0["valid"]
                 row["initial_min_nonbonded_distance"] = chk0["min_nonbonded_distance"]
+                row["initial_n_broken_bonds"] = len(chk0["broken_bond_pairs"])
+                row["initial_n_clashes"] = len(chk0["clash_pairs"])
+                initial_broken_bonds, initial_clashes = chk0["broken_bond_pairs"], chk0["clash_pairs"]
             except Exception as exc:
                 warnings.warn(f"{label}: failed to analyze initial geometry ({exc})")
 
@@ -589,8 +625,18 @@ def main():
                 row["final_geometry_valid"] = chk1["valid"]
                 row["final_min_nonbonded_distance"] = chk1["min_nonbonded_distance"]
                 row["chemical_break_reasons"] = "; ".join(chk1["reasons"])
-                row["bond_broken_during_optimization"] = chk1["bond_broken"] and row.get("initial_geometry_valid", True)
-                row["clash_created_during_optimization"] = chk1["clash"] and row.get("initial_geometry_valid", True)
+                row["final_n_broken_bonds"] = len(chk1["broken_bond_pairs"])
+                row["final_n_clashes"] = len(chk1["clash_pairs"])
+                # Compare the initial and final broken-bond / clash SETS
+                # independently: a bond that is newly broken (or a newly
+                # created clash) counts as generated by the relaxation even if
+                # the starting guess already had an unrelated clash elsewhere.
+                new_broken = chk1["broken_bond_pairs"] - initial_broken_bonds
+                new_clashes = chk1["clash_pairs"] - initial_clashes
+                row["bond_broken_during_optimization"] = len(new_broken) > 0
+                row["clash_created_during_optimization"] = len(new_clashes) > 0
+                row["newly_broken_bonds"] = "; ".join(f"{a}-{b}" for a, b in sorted(new_broken))
+                row["newly_created_clashes"] = "; ".join(f"{a}-{b}" for a, b in sorted(new_clashes))
 
                 # Fragment 1-3 / 2-4 cross contacts (final geometry only)
                 pos = final_atoms.get_positions()
@@ -606,6 +652,16 @@ def main():
                 row["min_distance_1_3_heavy"] = d13_heavy
                 row["min_distance_2_4_heavy"] = d24_heavy
                 row["cross_distance_mean_heavy"] = (d13_heavy + d24_heavy) / 2.0
+
+                # Robust packing descriptors (a single closest pair is fragile)
+                m13, n13 = cross_fragment_contact_stats(pos, symbols, fragment1, fragment3, N_SHORTEST_CONTACTS, CONTACT_CUTOFF_ANG)
+                m24, n24 = cross_fragment_contact_stats(pos, symbols, fragment2, fragment4, N_SHORTEST_CONTACTS, CONTACT_CUTOFF_ANG)
+                row["mean_shortest_3_distance_1_3_heavy"] = m13
+                row["mean_shortest_3_distance_2_4_heavy"] = m24
+                row["n_contacts_below_4A_1_3_heavy"] = n13
+                row["n_contacts_below_4A_2_4_heavy"] = n24
+                row["cross_distance_robust_mean"] = (m13 + m24) / 2.0
+                row["cross_contact_count_total"] = n13 + n24
             except Exception as exc:
                 warnings.warn(f"{label}: failed to analyze final geometry ({exc})")
 
@@ -648,8 +704,14 @@ def main():
         warnings.warn("No usable scan points -> relative energies undefined.")
     df["relative_energy_meV"] = np.where(df["final_energy"].notna(), (df["final_energy"] - e_ref) * HARTREE_TO_MEV, np.nan)
 
-    # ---- CONSISTENCY FLAGS ----
+    # ---- ANOMALIES vs. NOTES ----
+    # `flags` (anomalies) are reserved for: failed/unconverged jobs, broken or
+    # clashing structures, constraint violations, anomalous <S^2>, and real
+    # electronic peculiarities. Routine metadata (convergence type, starting
+    # geometry strain, mild ring puckering, TRAH use) goes to `notes` and is
+    # summarized statistically in the report instead of listed per point.
     flags = {label: [] for label in df["label"]}
+    notes = {label: [] for label in df["label"]}
     for _, row in df.iterrows():
         label = row["label"]
         if row["status"] != "converged":
@@ -660,14 +722,16 @@ def main():
                 for name, crit in (row.get("conv_criteria") or {}).items()
                 if not crit["converged"]
             ]
-            flags[label].append(f"convergence type = {row['convergence_type']}: " + "; ".join(failing))
-        if row.get("bond_broken_during_optimization") or row.get("clash_created_during_optimization"):
-            flags[label].append(f"CHEMICAL BREAKDOWN DURING OPTIMIZATION: {row.get('chemical_break_reasons', '')}")
-        elif row.get("initial_geometry_valid") is False and not row["usable"]:
-            # Only worth surfacing when it actually explains a non-usable point --
-            # a rigid pre-rotated guess can have a strained-but-harmless close
-            # contact that relaxation trivially resolves, which is not an anomaly.
-            flags[label].append("starting geometry already geometrically implausible (not a relaxation artifact)")
+            notes[label].append(f"convergence type = {row['convergence_type']}: " + "; ".join(failing))
+        if row.get("bond_broken_during_optimization"):
+            flags[label].append(f"bond(s) broken during optimization: {row.get('newly_broken_bonds', '')}")
+        if row.get("clash_created_during_optimization"):
+            flags[label].append(f"severe clash created during optimization: {row.get('newly_created_clashes', '')}")
+        if row.get("initial_geometry_valid") is False:
+            notes[label].append(
+                f"starting geometry already had {int(row.get('initial_n_broken_bonds', 0))} stretched bond(s) / "
+                f"{int(row.get('initial_n_clashes', 0))} close contact(s)"
+            )
         if row.get("angle_maintained") is False:
             flags[label].append("constrained angle not maintained within tolerance")
         s2f = row.get("s2_final")
@@ -676,19 +740,20 @@ def main():
         for ring_name in ("left", "right"):
             rms = row.get(f"final_{ring_name}_plane_rms")
             if rms is not None and pd.notna(rms) and rms > PLANARITY_RMS_THRESHOLD_ANG:
-                flags[label].append(f"{ring_name} ring non-planar (RMS={rms:.3f} Å)")
+                notes[label].append(f"{ring_name} ring puckered (RMS={rms:.3f} Å)")
         if row.get("scf_not_converged"):
-            flags[label].append("SCF NOT CONVERGED reported")
+            notes[label].append("SCF NOT CONVERGED reported")
         if row.get("trah_activations", 0) > 0:
-            flags[label].append(f"TRAH activated ({row['trah_activations']} times)")
+            notes[label].append(f"TRAH activated ({row['trah_activations']} times)")
         if row.get("neg_hessian_events", 0) > 0:
-            flags[label].append(f"negative Hessian eigenvalues ({row['neg_hessian_events']} events)")
+            notes[label].append(f"negative Hessian eigenvalues ({row['neg_hessian_events']} events)")
 
-    # Electronic/branch-change anomaly: energy discontinuity vs a grid
-    # neighbor is only flagged as a possible ELECTRONIC anomaly if it
-    # coincides with a discontinuity in <S^2> or terminal spin along the SAME
-    # neighbor pair. A large energy change vs C alone is normal steric/
-    # conjugation physics and is NOT flagged by itself (see angle_scan.md).
+    # Electronic/branch-change anomaly: an energy discontinuity vs a grid
+    # neighbor is only flagged if (a) <S^2> or terminal spin ALSO jumps along
+    # the same neighbor pair AND (b) the two structures do NOT differ strongly
+    # in plane-angle deviation, ring puckering or bond tilt -- otherwise the
+    # energy/spin change has a structural explanation and there is no good
+    # evidence the SCF moved to a different solution.
     grid = build_grid_index(df)
     axis_energy_steps, axis_s2_steps, axis_spin_steps = {}, {}, {}
     for axis in ("L", "C", "R"):
@@ -707,6 +772,21 @@ def main():
         axis_s2_steps[axis] = max(3.0 * (float(np.median(s2_diffs)) if s2_diffs else 0.0), S2_DISCONTINUITY_FLOOR)
         axis_spin_steps[axis] = max(3.0 * (float(np.median(spin_diffs)) if spin_diffs else 0.0), SPIN_DISCONTINUITY_FLOOR)
 
+    def structural_jump(a, b):
+        """True if points a, b differ strongly in accommodation descriptors."""
+        def diff(col):
+            va, vb = a.get(col), b.get(col)
+            return abs(va - vb) if (pd.notna(va) and pd.notna(vb)) else 0.0
+
+        mean_rms_a = np.nanmean([a.get("final_left_plane_rms"), a.get("final_right_plane_rms")])
+        mean_rms_b = np.nanmean([b.get("final_left_plane_rms"), b.get("final_right_plane_rms")])
+        return (
+            diff("plane_angle_deviation_final") > STRUCTURAL_JUMP_PLANE_ANGLE_DEG
+            or abs(mean_rms_a - mean_rms_b) > STRUCTURAL_JUMP_PLANARITY_RMS_ANG
+            or diff("final_tilt_ab") > STRUCTURAL_JUMP_TILT_DEG
+            or diff("final_tilt_cd") > STRUCTURAL_JUMP_TILT_DEG
+        )
+
     for idx, row in df.iterrows():
         if not row["usable"]:
             continue
@@ -718,13 +798,21 @@ def main():
                 e_jump = pd.notna(row["relative_energy_meV"]) and pd.notna(nrow["relative_energy_meV"]) and abs(row["relative_energy_meV"] - nrow["relative_energy_meV"]) > axis_energy_steps[axis]
                 s2_jump = pd.notna(row.get("s2_final")) and pd.notna(nrow.get("s2_final")) and abs(row["s2_final"] - nrow["s2_final"]) > axis_s2_steps[axis]
                 spin_jump = pd.notna(row.get("mean_terminal_spin_final")) and pd.notna(nrow.get("mean_terminal_spin_final")) and abs(row["mean_terminal_spin_final"] - nrow["mean_terminal_spin_final"]) > axis_spin_steps[axis]
-                if e_jump and (s2_jump or spin_jump):
+                if not (e_jump and (s2_jump or spin_jump)):
+                    continue
+                if structural_jump(row, nrow):
+                    notes[label].append(
+                        f"energy+spin jump vs {nrow['label']} accompanied by a large structural change "
+                        f"(not attributed to an SCF branch change)"
+                    )
+                else:
                     flags[label].append(
                         f"possible electronic/SCF branch change vs {nrow['label']} "
                         f"(ΔE={row['relative_energy_meV']-nrow['relative_energy_meV']:.0f} meV, "
-                        f"{'Δ<S^2>' if s2_jump else ''}{' & ' if s2_jump and spin_jump else ''}{'Δspin' if spin_jump else ''} also jumps)"
+                        f"{'Δ<S^2>' if s2_jump else ''}{' & ' if s2_jump and spin_jump else ''}{'Δspin' if spin_jump else ''} also jumps, "
+                        f"no comparable structural change)"
                     )
-                    break
+                break
 
         # Spin-topology anomaly relative to grid neighbors
         if row.get("spin_fragment1_final") is not None and row.get("spin_fragment4_final") is not None and pd.notna(row["spin_fragment1_final"]):
@@ -739,6 +827,7 @@ def main():
 
     df["flags"] = df["label"].map(lambda lbl: "; ".join(dict.fromkeys(flags[lbl])) if flags[lbl] else "")
     df["n_flags"] = df["label"].map(lambda lbl: len(set(flags[lbl])))
+    df["notes"] = df["label"].map(lambda lbl: "; ".join(dict.fromkeys(notes[lbl])) if notes[lbl] else "")
 
     # ---- SAVE CSV ----
     csv_df = df.copy()
@@ -760,11 +849,13 @@ def main():
     # ---- PLOTS ----
     PLOTS_DIR.mkdir(parents=True, exist_ok=True)
     HEATMAPS_DIR.mkdir(parents=True, exist_ok=True)
-    make_plots(df, PLOTS_DIR, HEATMAPS_DIR, RADICAL_ATOMS)
+    free_relax = load_free_relaxation(ROOT_DIR.parent / "angle_scan_free_relaxation", CENTER, e_ref)
+    print(f"Free-relaxation results found: {len(free_relax)}")
+    make_plots(df, PLOTS_DIR, HEATMAPS_DIR, RADICAL_ATOMS, free_relax)
     print(f"Wrote plots to {PLOTS_DIR}")
 
     # ---- MARKDOWN REPORT ----
-    write_markdown_report(df, MD_PATH, CENTER, LEFT, RIGHT, left_ring, right_ring, fragment1, fragment4, ROOT_DIR, ref_row)
+    write_markdown_report(df, MD_PATH, CENTER, LEFT, RIGHT, left_ring, right_ring, fragment1, fragment4, ROOT_DIR, ref_row, free_relax)
     print(f"Wrote {MD_PATH}")
 
     print_summary(df)
@@ -852,7 +943,7 @@ def attach_pbe0_hsbs(df, points, fragment1, fragment4):
     return df
 
 
-def make_plots(df, plots_dir, heatmaps_dir, radical_atoms):
+def make_plots(df, plots_dir, heatmaps_dir, radical_atoms, free_relax=()):
     usable = df["usable"]
     not_usable = ~usable
 
@@ -1045,6 +1136,7 @@ def make_plots(df, plots_dir, heatmaps_dir, radical_atoms):
 
     # --- 45/45 vs 135/135 crossover ---
     make_crossover_plots(df, plots_dir, c_values)
+    make_headline_plots(df, plots_dir, c_values, list(free_relax))
 
     # --- PBE0 HS/BS plots (only if data present) ---
     if df["E_HS_pbe0"].notna().any():
@@ -1055,6 +1147,14 @@ def symmetric_subset(df, l_val, r_val):
     return df[(df["L"] == l_val) & (df["R"] == r_val) & df["usable"]].set_index("C")
 
 
+def crossover_descriptors():
+    """(column, label) of the cross-fragment packing descriptors compared in the crossover."""
+    return [
+        ("cross_distance_mean_heavy", "closest-pair distance (mean of 1-3, 2-4)"),
+        ("cross_distance_robust_mean", "mean of 3 shortest heavy-atom contacts (mean of 1-3, 2-4)"),
+    ]
+
+
 def make_crossover_plots(df, plots_dir, c_values):
     sym45 = symmetric_subset(df, 45.0, 45.0)
     sym135 = symmetric_subset(df, 135.0, 135.0)
@@ -1063,41 +1163,148 @@ def make_crossover_plots(df, plots_dir, c_values):
         return
 
     delta_e = [sym45.loc[cv, "relative_energy_meV"] - sym135.loc[cv, "relative_energy_meV"] for cv in common_c]
-    delta_cross = [sym45.loc[cv, "cross_distance_mean_heavy"] - sym135.loc[cv, "cross_distance_mean_heavy"] for cv in common_c]
+    descriptors = crossover_descriptors()
 
-    fig, ax = plt.subplots()
-    ax.plot(common_c, [sym45.loc[cv, "min_distance_1_3_heavy"] for cv in common_c], "o-", label="dmin(1,3), 45/45")
-    ax.plot(common_c, [sym45.loc[cv, "min_distance_2_4_heavy"] for cv in common_c], "s-", label="dmin(2,4), 45/45")
-    ax.plot(common_c, [sym135.loc[cv, "min_distance_1_3_heavy"] for cv in common_c], "o--", label="dmin(1,3), 135/135")
-    ax.plot(common_c, [sym135.loc[cv, "min_distance_2_4_heavy"] for cv in common_c], "s--", label="dmin(2,4), 135/135")
-    ax.set_xlabel("Central (C) target dihedral (deg)")
-    ax.set_ylabel("Cross-fragment min. heavy-atom distance (Å)")
-    ax.legend(fontsize=8)
+    # Two-panel main figure: dE(C) on top, d(cross)(C) below, zero line in both.
+    fig, (ax_e, ax_d) = plt.subplots(2, 1, sharex=True, figsize=(6.4, 7))
+    ax_e.axhline(0, color="k", linewidth=1)
+    ax_e.plot(common_c, delta_e, "o-", color="tab:purple")
+    ax_e.set_ylabel("ΔE = E(45/45) − E(135/135) (meV)")
+    ax_e.set_title("Positive: 135/135 lower in energy;  negative: 45/45 lower")
+
+    ax_d.axhline(0, color="k", linewidth=1)
+    styles = [("o-", "tab:blue"), ("s--", "tab:green")]
+    for (col, label), (fmt, color) in zip(descriptors, styles):
+        delta_d = [sym45.loc[cv, col] - sym135.loc[cv, col] for cv in common_c]
+        ax_d.plot(common_c, delta_d, fmt, color=color, label=label)
+    ax_d.set_xlabel("Central (C) target dihedral (deg)")
+    ax_d.set_ylabel("Δd_cross = d(45/45) − d(135/135) (Å)")
+    ax_d.legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(plots_dir / "cross_contacts_45_vs_135.png", dpi=150)
+    fig.savefig(plots_dir / "crossover_two_panel.png", dpi=150)
     plt.close(fig)
 
-    fig, ax = plt.subplots()
-    ax.axhline(0, color="k", linewidth=1)
-    ax.plot(common_c, delta_e, "o-", color="tab:purple")
-    ax.set_xlabel("Central (C) target dihedral (deg)")
-    ax.set_ylabel("ΔE = E(45/45) − E(135/135) (meV)")
-    ax.set_title("Negative = 45/45 preferred, positive = 135/135 preferred")
-    fig.tight_layout()
-    fig.savefig(plots_dir / "delta_E_45_vs_135.png", dpi=150)
-    plt.close(fig)
-
-    fig, ax = plt.subplots()
-    ax.scatter(delta_cross, delta_e)
-    r, n = pearson_r(delta_cross, delta_e)
-    for cv, x, y in zip(common_c, delta_cross, delta_e):
-        ax.annotate(f"{int(cv)}", (x, y), fontsize=7)
-    ax.set_xlabel("Δ cross-contact distance, 45/45 − 135/135 (Å)")
-    ax.set_ylabel("ΔE, 45/45 − 135/135 (meV)")
-    ax.set_title(f"Pearson r = {r:.2f} (n={n}) — correlation, not causation")
+    # Supplementary scatter: dE vs dd for each descriptor, with Pearson r.
+    fig, axes = plt.subplots(1, len(descriptors), figsize=(6.2 * len(descriptors) / 1.4, 4.6))
+    for ax, (col, label) in zip(np.atleast_1d(axes), descriptors):
+        delta_d = [sym45.loc[cv, col] - sym135.loc[cv, col] for cv in common_c]
+        ax.scatter(delta_d, delta_e)
+        for cv, x, y in zip(common_c, delta_d, delta_e):
+            ax.annotate(f"{int(cv)}", (x, y), fontsize=7)
+        r, n = pearson_r(delta_d, delta_e)
+        ax.set_xlabel("Δd_cross (Å)")
+        ax.set_ylabel("ΔE (meV)")
+        ax.set_title(f"{label}\nPearson r = {r:.2f} (n={n})", fontsize=8)
     fig.tight_layout()
     fig.savefig(plots_dir / "delta_E_vs_delta_cross_contact.png", dpi=150)
     plt.close(fig)
+
+
+def load_free_relaxation(free_root, center, e_ref):
+    """
+    Optional overlay: unconstrained HS/BS free relaxations (angle_scan_free_relaxation).
+    Returns [{label, state, central_dihedral, rel_energy_meV, converged}] for every
+    <point>/<state>/<state>.out that exists; empty list if none.
+    """
+    results = []
+    if not free_root.exists() or not np.isfinite(e_ref):
+        return results
+    for point in sorted(p for p in free_root.iterdir() if p.is_dir()):
+        for state in ("high_spin", "broken_symmetry"):
+            out_file = point / state / f"{state}.out"
+            xyz_file = point / state / f"{state}.xyz"
+            if not out_file.exists():
+                continue
+            text = out_file.read_text(errors="ignore")
+            energies = FINAL_E_RE.findall(text)
+            if not energies:
+                continue
+            converged, _, _ = classify_convergence(text)
+            entry = {
+                "label": point.name,
+                "state": state,
+                "rel_energy_meV": (float(energies[-1]) - e_ref) * HARTREE_TO_MEV,
+                "converged": converged,
+                "central_dihedral": np.nan,
+            }
+            if xyz_file.exists():
+                try:
+                    entry["central_dihedral"] = float(read(xyz_file).get_dihedral(*center))
+                except Exception:
+                    pass
+            results.append(entry)
+    return results
+
+
+def make_headline_plots(df, plots_dir, c_values, free_relax):
+    usable = df["usable"]
+
+    # --- Principal conformational-energy figure: E(C) for symmetric outer
+    # torsions + E_min(C) = min over (L, R), plus optional free-relaxation markers.
+    fig, ax = plt.subplots(figsize=(7, 5))
+    styles = {0.0: ("tab:blue", "-"), 45.0: ("tab:orange", "-"), 90.0: ("tab:green", "-"),
+              135.0: ("tab:red", "-"), 180.0: ("tab:grey", "--")}
+    for outer, (color, ls) in styles.items():
+        sub = df[usable & (df["L"] == outer) & (df["R"] == outer)].sort_values("C")
+        if sub.empty:
+            continue
+        ax.plot(sub["C"], sub["relative_energy_meV"], marker="o", ls=ls, color=color,
+                alpha=0.55 if outer == 180.0 else 0.9, label=f"L=R={int(outer)}°")
+
+    e_min = df[usable].groupby("C")["relative_energy_meV"].min()
+    ax.plot(e_min.index, e_min.values, "k-", linewidth=3, marker="o", label="E_min(C) = min over (L,R)")
+
+    for entry in free_relax:
+        if not np.isfinite(entry["central_dihedral"]):
+            continue
+        marker = "*" if entry["state"] == "high_spin" else "D"
+        ax.scatter(entry["central_dihedral"], entry["rel_energy_meV"], marker=marker, s=130,
+                   facecolors="none" if not entry["converged"] else "gold", edgecolors="k", zorder=6)
+    if free_relax:
+        ax.scatter([], [], marker="*", s=130, facecolors="gold", edgecolors="k", label="free HS relaxation")
+        ax.scatter([], [], marker="D", s=80, facecolors="gold", edgecolors="k", label="free BS relaxation")
+
+    ax.set_xlabel("Central (C) dihedral (deg)")
+    ax.set_ylabel("Relative energy (meV), R2SCAN-3C HS surface")
+    ax.set_title("Conformational energy vs central torsion")
+    ax.legend(fontsize=8)
+    fig.tight_layout()
+    fig.savefig(plots_dir / "energy_vs_C_symmetric_outer.png", dpi=150)
+    plt.close(fig)
+
+    # --- Radical localization vs OUTER angle, L and R pooled (mean +/- std) ---
+    outer_vals = sorted(set(df["L"].unique()) | set(df["R"].unique()))
+    pooled_mean, pooled_std, pooled_n = [], [], []
+    for v in outer_vals:
+        vals = pd.concat([
+            df.loc[usable & (df["L"] == v), "spin_fragment1_final"],
+            df.loc[usable & (df["R"] == v), "spin_fragment4_final"],
+        ]).dropna()
+        pooled_mean.append(vals.mean())
+        pooled_std.append(vals.std())
+        pooled_n.append(len(vals))
+    fig, ax = plt.subplots()
+    ax.errorbar(outer_vals, pooled_mean, yerr=pooled_std, marker="o", capsize=4, color="tab:blue")
+    ax.set_xlabel("Outer dihedral, own side (L for fragment 1, R for fragment 4) (deg)")
+    ax.set_ylabel("Terminal-fragment spin population (mean ± std)")
+    ax.set_title("Radical localization is set by its own outer torsion")
+    fig.tight_layout()
+    fig.savefig(plots_dir / "terminal_spin_vs_outer_pooled.png", dpi=150)
+    plt.close(fig)
+
+    # --- Control: localization vs C at fixed L=R=45 (expected ~flat) ---
+    sub = df[usable & (df["L"] == 45.0) & (df["R"] == 45.0)].sort_values("C")
+    if not sub.empty:
+        fig, ax = plt.subplots(figsize=(5.5, 4))
+        ax.plot(sub["C"], sub["spin_fragment1_final"], "o-", label="fragment 1")
+        ax.plot(sub["C"], sub["spin_fragment4_final"], "s--", label="fragment 4")
+        ax.set_xlabel("Central (C) dihedral (deg)")
+        ax.set_ylabel("Terminal-fragment spin")
+        ax.set_title("Control: L=R=45° fixed, C varied")
+        ax.legend(fontsize=8)
+        fig.tight_layout()
+        fig.savefig(plots_dir / "terminal_spin_vs_C_control_L45R45.png", dpi=150)
+        plt.close(fig)
 
 
 def make_pbe0_plots(df, plots_dir):
@@ -1123,9 +1330,19 @@ def make_pbe0_plots(df, plots_dir):
     plt.close(fig)
 
 
-def write_markdown_report(df, md_path, center, left, right, left_ring, right_ring, fragment1, fragment4, root_dir, ref_row):
+def write_markdown_report(df, md_path, center, left, right, left_ring, right_ring, fragment1, fragment4, root_dir, ref_row, free_relax=()):
     lines = []
+    usable = df["usable"]
     lines.append("# ORCA constrained-torsion angle scan — full L×C×R grid\n")
+
+    lines.append("## Summary of the picture\n")
+    lines.append(
+        "1. **Central torsion → conformational energy and structural strain.**\n"
+        "2. **Outer torsions → radical localization** (each terminal radical is controlled by its own outer torsion).\n"
+        "3. **Radical localization → exchange coupling J**: the third step, to be provided by the separate PBE0 HS/BS "
+        "single points (not yet available; see the last section).\n"
+    )
+
     lines.append("## Overview and methods\n")
     lines.append(f"- Scan root: `{root_dir}`")
     lines.append(f"- {len(df)} scan points, R2SCAN-3C TightOpt UKS, high-spin (multiplicity 3)")
@@ -1134,42 +1351,41 @@ def write_markdown_report(df, md_path, center, left, right, left_ring, right_rin
     lines.append(f"- Fragment 4 (RIGHT terminal, radical atom 28, {len(fragment4)} atoms): {fragment4}")
     lines.append("- Fragments 2/3: the central backbone, split at the CENTER bond")
     lines.append(
-        "- **Convergence** is read directly from ORCA's literal `THE OPTIMIZATION HAS CONVERGED` banner "
-        "(authoritative), with the override type it used (strict / gradient-overachieved / "
-        "step-overachieved / energy-override / other) recorded separately for transparency."
+        "- **Convergence** is read from ORCA's literal `THE OPTIMIZATION HAS CONVERGED` banner (authoritative); "
+        "the override type ORCA used is recorded separately and summarized statistically below (it is metadata, not an anomaly)."
     )
     lines.append(
-        "- **Chemical integrity** is checked on BOTH the initial and final geometry against the clean, "
-        "untwisted baseline connectivity (bond stretch > 0.30 Å or length > 1.9 Å = broken bond; "
-        "non-bonded pair < 1.5 Å = clash). `bond_broken_during_optimization` / "
-        "`clash_created_during_optimization` are only true if the INITIAL geometry was already valid — "
-        "i.e. the breakdown happened during relaxation, not because the starting guess was already "
-        "geometrically impossible."
+        "- **Chemical integrity**: the SETS of broken reference bonds (stretch > 0.30 Å or > 1.9 Å) and severe "
+        "non-bonded clashes (< 1.5 Å) are computed for the initial and the final geometry independently. A bond or "
+        "clash present in the final set but not the initial set is attributed to the relaxation — an unrelated clash "
+        "in the starting guess never masks it."
     )
     lines.append(
-        "- **Spin populations**: `spin_final`/`s2_final` require BOTH ORCA convergence (the banner above) "
-        "AND a post-optimization Mulliken population analysis. Unconverged jobs never contribute to "
-        "primary plots; their last available (initial-SCF) spin is kept separately as "
-        "`radical_spin_last_available_*` for bookkeeping only."
+        "- **Spin populations**: `spin_final`/`s2_final` require BOTH ORCA convergence AND a post-optimization Mulliken "
+        "analysis. Unconverged jobs never enter primary plots; their last available (initial-SCF) spin is kept only as "
+        "`*_last_available_*` bookkeeping."
     )
     lines.append(
-        "- **Energy discontinuity vs. a neighboring grid point is NOT by itself flagged as anomalous** "
-        "(large curvature near C~20°/140-160° is expected steric/conjugation physics). It is only "
-        "flagged as a *possible electronic/SCF branch change* when it coincides with a simultaneous jump "
-        "in ⟨S²⟩ or terminal-fragment spin at the same neighbor pair."
+        "- **Anomalies vs notes**: the anomaly list is reserved for failed/unconverged jobs, chemically broken structures, "
+        "constraint violations, anomalous ⟨S²⟩ and electronic peculiarities. Routine metadata (convergence "
+        "type, strained starting guess, ring puckering, TRAH use) is in the `notes` column of `angle_scan.csv`. A large "
+        "energy change between neighboring grid points is NOT an anomaly by itself; it is flagged as a possible "
+        "SCF branch change only if ⟨S²⟩/spin also jump AND the two structures do not differ strongly in "
+        "plane-angle deviation, ring puckering or bond tilt (otherwise the change has a structural explanation)."
     )
     lines.append(
-        "- **Magnitude/handedness**: for each of L, C, R, `magnitude = min(θ, 180−θ)` and "
-        "`handedness = sign(θ−90)`. 45° and 135° share the same magnitude but opposite "
-        "handedness and are NOT treated as equivalent anywhere in this analysis."
+        "- **Magnitude/handedness**: `magnitude = min(θ, 180−θ)`, `handedness = sign(θ−90)`; 45° and "
+        "135° share magnitude but have opposite handedness and are never treated as equivalent."
     )
     lines.append("")
 
-    usable = df["usable"]
+    if (md_path.parent / "plots" / "torsion_scheme.png").exists():
+        lines.append("**What the scan does** (generated by `draw_torsion_scheme.py`): the three constrained dihedrals L, C, R and the four fragments 1\u20132\u20133\u20134.\n")
+        lines.append("![Torsion scheme](plots/torsion_scheme.png)\n")
 
-    # ---- Q1: accessible space ----
-    lines.append("## Question 1 — What L,C,R space is mechanically/chemically accessible?\n")
-    lines.append("| C (deg) | ORCA-converged / 25 | geometry valid (final) | usable |")
+    # ---- Q1 ----
+    lines.append("## Question 1 — Which L,C,R space is accessible?\n")
+    lines.append("| C (deg) | ORCA-converged / 25 | final geometry valid | usable |")
     lines.append("|---|---|---|---|")
     for cv in sorted(df["C"].unique()):
         sub = df[df["C"] == cv]
@@ -1179,83 +1395,132 @@ def write_markdown_report(df, md_path, center, left, right, left_ring, right_rin
     lines.append("![Optimization cycles vs C](plots/optimization_cycles_vs_C.png)\n")
     lines.append("![Steric vs C](plots/steric_vs_C.png)\n")
 
+    conv_df = df[df["status"] == "converged"]
+    lines.append("**Convergence types among the ORCA-converged points** (routine metadata):\n")
+    type_counts = conv_df["convergence_type"].value_counts()
+    lines.append("| type | count | fraction |")
+    lines.append("|---|---|---|")
+    for t, cnt in type_counts.items():
+        lines.append(f"| {t} | {cnt} | {cnt/len(conv_df):.0%} |")
+    lines.append("")
+    n_fail = int((df["status"] != "converged").sum())
+    fail_counts = df.loc[df["status"] != "converged", "status"].value_counts().to_dict()
+    lines.append(f"Non-converged: {n_fail} points ({fail_counts}).\n")
+
     broken_converged = df[(df["status"] == "converged") & (df["final_geometry_valid"] == False)]
-    lines.append(f"**Converged-but-chemically-broken points** (ORCA's own convergence signal does not catch these): {len(broken_converged)}\n")
+    lines.append(f"**Converged-but-chemically-broken points** (ORCA's convergence signal does not catch these): {len(broken_converged)}\n")
     for _, row in broken_converged.iterrows():
-        lines.append(f"- **{row['label']}**: E={row['final_energy']:.6f} Eh; {row['chemical_break_reasons']}")
+        lines.append(f"- **{row['label']}**: E={row['final_energy']:.6f} Eh; newly broken bonds {row.get('newly_broken_bonds', '')}; {row['chemical_break_reasons']}")
     lines.append("")
 
-    # ---- Q2: central torsion accommodation ----
-    lines.append("## Question 2 — How does the molecule accommodate the imposed central torsion?\n")
+    # ---- Q2 / headline energy ----
+    lines.append("## Question 2 — Central torsion → conformational energy and structural accommodation\n")
     lines.append(
-        "ORCA holds the literal 4-atom CENTER dihedral exactly at target; the fitted central-plane angle "
-        "(between the two aromatic rings flanking the CENTER bond) can still differ, absorbing torsion "
-        "through local puckering/bond tilt instead.\n"
+        "**Main figure.** E(C) for symmetric outer torsions L=R=0/45/90/135° (180° dashed, lighter), and the thick "
+        "black curve E_min(C) = min over (L,R): the best energy the molecule reaches at each central angle after choosing "
+        "its outer conformation, which separates the intrinsic preference for C from an arbitrary choice of fixed outer "
+        "angle. "
+        + ("Free HS/BS relaxations found are overlaid as markers (gold = converged).\n" if free_relax else
+           "Free HS/BS relaxations (`angle_scan_free_relaxation`) will be overlaid as markers once their outputs exist.\n")
+    )
+    lines.append("![E(C) symmetric outer](plots/energy_vs_C_symmetric_outer.png)\n")
+    e_min = df[usable].groupby("C")["relative_energy_meV"].min()
+    lines.append("| C (deg) | E_min(C) (meV above global min) |")
+    lines.append("|---|---|")
+    for cv, e in e_min.items():
+        lines.append(f"| {int(cv)} | {e:.0f} |")
+    lines.append("")
+    if ref_row is not None:
+        lines.append(f"Global reference: **{ref_row['label']}** (L={ref_row['L']:.0f}, C={ref_row['C']:.0f}, R={ref_row['R']:.0f}), E={ref_row['final_energy']:.8f} Eh.\n")
+
+    lines.append("### Structural accommodation of the imposed central torsion\n")
+    lines.append(
+        "ORCA holds the literal 4-atom CENTER dihedral exactly at target, but the fitted planes of the two flanking "
+        "aromatic rings can still separate by a different angle: the molecule distorts internally (ring puckering, bond "
+        "tilt) so that the actual π planes do not simply follow the imposed dihedral. y = x is the rigid-fragment expectation.\n"
     )
     lines.append("![Plane angle vs target](plots/plane_angle_vs_target.png)\n")
     lines.append("![Mean plane angle vs C](plots/mean_plane_angle_vs_C.png)\n")
     lines.append("![Plane angle deviation vs C](plots/plane_angle_deviation_vs_C.png)\n")
     lines.append("![Bond tilt vs C](plots/bond_tilt_vs_C.png)\n")
-    lines.append("![Bending accommodation vs C](plots/bending_accommodation_vs_C.png)\n")
+    lines.append("![Puckering vs C](plots/bending_accommodation_vs_C.png)\n")
 
-    # ---- Q3/Q4: crossover + cross contacts ----
-    lines.append("## Questions 3 & 4 — The 45/45 ↔ 135/135 outer-folding crossover\n")
+    # ---- Q3/Q4 ----
+    lines.append("## Questions 3 & 4 — The 45/45 ↔ 135/135 crossover and 1–3 / 2–4 packing\n")
     sym45 = symmetric_subset(df, 45.0, 45.0)
     sym135 = symmetric_subset(df, 135.0, 135.0)
     common_c = sorted(set(sym45.index) & set(sym135.index))
     if common_c:
-        lines.append("| C | E(45/45) rel. (meV) | E(135/135) rel. (meV) | preferred | Δcross-contact (Å), 45−135 |")
-        lines.append("|---|---|---|---|---|")
+        lines.append("| C | E(45/45) (meV) | E(135/135) (meV) | preferred | Δd closest-pair (Å) | Δd 3-shortest mean (Å) | Δ #contacts<4Å |")
+        lines.append("|---|---|---|---|---|---|---|")
         for cv in common_c:
             e45, e135 = sym45.loc[cv, "relative_energy_meV"], sym135.loc[cv, "relative_energy_meV"]
             pref = "45/45" if e45 < e135 else "135/135"
-            dcross = sym45.loc[cv, "cross_distance_mean_heavy"] - sym135.loc[cv, "cross_distance_mean_heavy"]
-            lines.append(f"| {int(cv)} | {e45:.0f} | {e135:.0f} | {pref} | {dcross:+.3f} |")
+            d_min = sym45.loc[cv, "cross_distance_mean_heavy"] - sym135.loc[cv, "cross_distance_mean_heavy"]
+            d_rob = sym45.loc[cv, "cross_distance_robust_mean"] - sym135.loc[cv, "cross_distance_robust_mean"]
+            d_cnt = sym45.loc[cv, "cross_contact_count_total"] - sym135.loc[cv, "cross_contact_count_total"]
+            lines.append(f"| {int(cv)} | {e45:.0f} | {e135:.0f} | {pref} | {d_min:+.3f} | {d_rob:+.3f} | {d_cnt:+.0f} |")
         lines.append("")
         delta_e = [sym45.loc[cv, "relative_energy_meV"] - sym135.loc[cv, "relative_energy_meV"] for cv in common_c]
-        delta_cross = [sym45.loc[cv, "cross_distance_mean_heavy"] - sym135.loc[cv, "cross_distance_mean_heavy"] for cv in common_c]
-        r, n = pearson_r(delta_cross, delta_e)
-        below90_pref = {cv: ("45/45" if sym45.loc[cv, "relative_energy_meV"] < sym135.loc[cv, "relative_energy_meV"] else "135/135") for cv in common_c if cv < 90}
-        above90_pref = {cv: ("45/45" if sym45.loc[cv, "relative_energy_meV"] < sym135.loc[cv, "relative_energy_meV"] else "135/135") for cv in common_c if cv > 90}
-        below_consistent = len(set(below90_pref.values())) <= 1
-        above_consistent = len(set(above90_pref.values())) <= 1
+        corr_lines = []
+        for col, label in crossover_descriptors() + [("cross_contact_count_total", "number of heavy-atom contacts < 4 Å (1-3 plus 2-4)")]:
+            delta_d = [sym45.loc[cv, col] - sym135.loc[cv, col] for cv in common_c]
+            r, n = pearson_r(delta_d, delta_e)
+            corr_lines.append(f"  - {label}: Pearson r = {r:.2f} (n={n})")
+        below = {cv: ("45/45" if sym45.loc[cv, "relative_energy_meV"] < sym135.loc[cv, "relative_energy_meV"] else "135/135") for cv in common_c if cv < 90}
+        above = {cv: ("45/45" if sym45.loc[cv, "relative_energy_meV"] < sym135.loc[cv, "relative_energy_meV"] else "135/135") for cv in common_c if cv > 90}
         lines.append(
-            f"Crossover check: for C<90° ({sorted(below90_pref)} deg), the preferred structure is "
-            f"{'consistently ' if below_consistent else '(mixed) '}{list(below90_pref.values())}; "
-            f"for C>90° ({sorted(above90_pref)} deg), it is "
-            f"{'consistently ' if above_consistent else '(mixed) '}{list(above90_pref.values())}. "
-            f"Correlation between ΔE(45−135) and Δcross-contact "
-            f"distance: **Pearson r = {r:.2f}** (n={n}). Correlation does not establish causation — see "
-            f"`delta_E_vs_delta_cross_contact.png` and cross-check against plane angle / bond tilt / "
-            f"puckering / bond-angle strain in `angle_scan.csv` before drawing mechanistic conclusions.\n"
+            f"For C<90° ({sorted(below)}) the lower-energy symmetric outer geometry is "
+            f"{'consistently ' if len(set(below.values())) <= 1 else '(mixed) '}{sorted(set(below.values()))}; "
+            f"for C>90° ({sorted(above)}) it is {'consistently ' if len(set(above.values())) <= 1 else '(mixed) '}{sorted(set(above.values()))}. "
+            f"Correlation of ΔE(45−135) with the difference in cross-fragment packing:\n" + "\n".join(corr_lines) + "\n"
+        )
+        agree = {
+            col: [((sym45.loc[cv, "relative_energy_meV"] < sym135.loc[cv, "relative_energy_meV"]) == (sym45.loc[cv, col] < sym135.loc[cv, col])) for cv in common_c]
+            for col in ("cross_distance_mean_heavy", "cross_distance_robust_mean")
+        }
+        n_all = len(common_c)
+        agree_txt = "; ".join(f"{col}: shorter-contact structure is the lower-energy one in {sum(v)}/{n_all} comparisons" for col, v in agree.items())
+        lines.append(
+            f"Consistency check ({agree_txt}). Cross-fragment packing therefore correlates with the handedness "
+            "preference, but this is a correlation over a handful of symmetric comparisons, not proof of causation, and it "
+            "does not mean the molecule generally minimizes d\u2081\u2083 or d\u2082\u2084: the closest distance alone does not "
+            "explain the energy of arbitrary (L,R) geometries. The 3-shortest-contact mean and the contact count are "
+            "included because a single closest atom pair is a fragile descriptor.\n"
         )
     else:
         lines.append("Not enough usable symmetric 45/45 and 135/135 points to test the crossover.\n")
-    lines.append("![Cross contacts 45 vs 135](plots/cross_contacts_45_vs_135.png)\n")
-    lines.append("![Delta E 45 vs 135](plots/delta_E_45_vs_135.png)\n")
+    lines.append("![Crossover two-panel](plots/crossover_two_panel.png)\n")
+    lines.append("Supplementary: ΔE vs Δd_cross scatter (Pearson r per descriptor).\n")
     lines.append("![Delta E vs delta cross contact](plots/delta_E_vs_delta_cross_contact.png)\n")
 
-    # ---- Q5: independence of outer torsions ----
-    lines.append("## Question 5 — Do L and R independently control fragment 1 and 4 spin?\n")
+    # ---- Q5 ----
+    lines.append("## Question 5 — Outer torsions → radical localization\n")
     outer_vals = sorted(set(df["L"].unique()) | set(df["R"].unique()))
     lines.append("| outer angle | frag1 mean±std (vs L) | frag1 range | frag4 mean±std (vs R) | frag4 range |")
     lines.append("|---|---|---|---|---|")
     for v in outer_vals:
         s1 = df.loc[usable & (df["L"] == v), "spin_fragment1_final"]
         s4 = df.loc[usable & (df["R"] == v), "spin_fragment4_final"]
-        lines.append(
-            f"| {int(v)} | {s1.mean():.3f}±{s1.std():.3f} | [{s1.min():.3f}, {s1.max():.3f}] | "
-            f"{s4.mean():.3f}±{s4.std():.3f} | [{s4.min():.3f}, {s4.max():.3f}] |"
-        )
+        lines.append(f"| {int(v)} | {s1.mean():.3f}±{s1.std():.3f} | [{s1.min():.3f}, {s1.max():.3f}] | {s4.mean():.3f}±{s4.std():.3f} | [{s4.min():.3f}, {s4.max():.3f}] |")
     lines.append("")
-    lines.append("![Fragment spin vs outer torsion](plots/fragment_spin_vs_outer_torsion.png)\n")
+    lines.append(
+        "The scatter across all other coordinates is tiny (e.g. ~0.005 at 90°), so each terminal radical is controlled "
+        "almost independently by its own outer torsion. Left and right behave symmetrically and are pooled in the main figure.\n"
+    )
+    lines.append("![Terminal spin vs outer torsion (pooled)](plots/terminal_spin_vs_outer_pooled.png)\n")
+    lines.append("![Fragment spin vs outer torsion (L and R separately)](plots/fragment_spin_vs_outer_torsion.png)\n")
+    lines.append("Control experiment (expected ~flat: varying the central torsion barely changes local radical character):\n")
+    lines.append("![Control: terminal spin vs C at L=R=45](plots/terminal_spin_vs_C_control_L45R45.png)\n")
+    r_s2, n_s2 = pearson_r(df.loc[usable, "mean_terminal_spin_final"], df.loc[usable, "s2_final"])
+    lines.append(f"⟨S²⟩ vs mean terminal spin: Pearson r = {r_s2:.2f} (n={n_s2}).\n")
+    lines.append("![S2 vs terminal spin localization](plots/s2_vs_terminal_spin_localization.png)\n")
+    lines.append("![S2 vs C](plots/s2_vs_C.png)\n")
     lines.append("![Central backbone spin vs C](plots/central_backbone_spin_vs_C.png)\n")
     lines.append("![Radical atom 28/41 vs L (supplementary)](plots/radical_atom_spin_vs_L_supplementary.png)\n")
-    lines.append("![S2 vs C](plots/s2_vs_C.png)\n")
-    lines.append("![S2 vs terminal spin localization](plots/s2_vs_terminal_spin_localization.png)\n")
 
-    # ---- Q6/Q7: exchange (scaffold) ----
-    lines.append("## Questions 6 & 7 — Does terminal localization suppress the AFM HS−BS exchange?\n")
+    # ---- Q6/Q7 ----
+    lines.append("## Questions 6 & 7 — Radical localization → exchange coupling (PBE0 HS/BS)\n")
     if df["E_HS_pbe0"].notna().any():
         have = df["E_HS_pbe0"].notna() & usable
         r, n = pearson_r(df.loc[have, "mean_terminal_spin_final"], df.loc[have, "delta_E_exchange_meV"])
@@ -1263,41 +1528,46 @@ def write_markdown_report(df, md_path, center, left, right, left_ring, right_rin
         lines.append(
             f"PBE0 HS/BS single points found for {int(df['E_HS_pbe0'].notna().sum())} scan points. "
             f"Pearson r(mean terminal spin, ΔE_exchange) = {r:.2f} (n={n}). "
-            f"Points where the raw HS energy is BELOW BS (triplet locally favored at this fixed geometry): {n_triplet_ground}.\n"
+            f"Points where the raw HS energy is below BS (triplet locally favored at this fixed geometry): {n_triplet_ground}.\n"
         )
         lines.append("![Exchange vs C](plots/exchange_vs_C.png)\n")
         lines.append("![Exchange vs terminal spin](plots/exchange_vs_terminal_spin.png)\n")
     else:
         lines.append(
-            "**No PBE0 HS/BS single-point data found yet.** This analysis is wired up to automatically pick "
-            "up `<point>/high_spin/high_spin.out` and `<point>/broken_symmetry/broken_symmetry.out` for each "
-            "scan point once those separate PBE0 single points exist, and will populate "
-            "`delta_E_exchange_meV`, `s2_HS_pbe0`, `s2_BS_pbe0`, and the fragment-1/4 HS/BS spins in "
-            "`angle_scan.csv` plus the plots above on the next run — no code changes needed.\n"
+            "**No PBE0 HS/BS single-point data found yet.** The analysis picks up `<point>/high_spin/high_spin.out` and "
+            "`<point>/broken_symmetry/broken_symmetry.out` automatically and will populate `delta_E_exchange_meV`, "
+            "`s2_HS_pbe0`, `s2_BS_pbe0` and the fragment-1/4 HS/BS spins in `angle_scan.csv` and the exchange plots on the "
+            "next run.\n"
         )
     lines.append(
-        "**Important limitation**: every geometry here was optimized on the HIGH-SPIN R2SCAN-3C surface. "
-        "A PBE0 HS/BS comparison on these frozen geometries gives the local electronic exchange AT that "
-        "high-spin-relaxed geometry — it does NOT determine whether the broken-symmetry state would relax "
-        "to a different geometry. D4 dispersion should not be added to the PBE0 HS/BS single points: both "
-        "states share the same frozen geometry, so it cancels in the difference; the raw E_HS−E_BS is "
-        "also not a rigorous pure singlet-triplet gap and is labeled as such throughout.\n"
+        "**Limitations.** Every geometry here was optimized on the HIGH-SPIN R2SCAN-3C surface; a PBE0 HS/BS comparison on "
+        "these frozen geometries gives the local electronic exchange at that HS-relaxed geometry and does not say whether "
+        "the BS state would relax elsewhere. No D4 is needed on the PBE0 single points (it cancels in E_HS−E_BS at a "
+        "shared geometry). The raw E_HS−E_BS is not a rigorous pure singlet-triplet gap.\n"
     )
     lines.append(
-        "Once the exchange map is populated, a small representative subset (strongly AFM point, "
-        "intermediate point, near-decoupled/localized point, and any point where HS becomes competitive "
-        "with or lower than BS) should be selected for independent BS geometry optimization, rather than "
-        "repeating it over the full usable grid.\n"
+        "Once the exchange map exists, choose a small representative subset for independent BS geometry optimization "
+        "(strongly AFM/high-conjugation, intermediate, nearly decoupled/localized, and any point where HS is competitive "
+        "or lower) rather than repeating it over the full usable grid.\n"
     )
 
-    lines.append("## Flagged anomalies\n")
+    # ---- Anomalies ----
+    lines.append("## Anomalies\n")
     flagged = df[df["n_flags"] > 0]
-    if flagged.empty:
-        lines.append("None.\n")
+    n_conv_anom = int(((df["status"] == "converged") & (df["n_flags"] > 0)).sum())
+    lines.append(
+        f"{len(flagged)} of {len(df)} points carry an anomaly flag: the {n_fail} non-converged jobs "
+        f"(listed in `angle_scan.csv`, `status` column) plus {n_conv_anom} ORCA-converged points with a genuine flag, "
+        "listed here. Routine convergence types, strained starting geometries, ring puckering and TRAH use are "
+        "summarized above / in the `notes` column, not listed per point.\n"
+    )
+    genuine = df[(df["status"] == "converged") & (df["n_flags"] > 0)]
+    if genuine.empty:
+        lines.append("No ORCA-converged point has an anomaly flag.\n")
     else:
-        for _, row in flagged.sort_values(["C", "L", "R"]).iterrows():
+        for _, row in genuine.sort_values(["C", "L", "R"]).iterrows():
             lines.append(f"- **{row['label']}**: {row['flags']}")
-    lines.append("")
+        lines.append("")
 
     lines.append("## Per-C energy heatmaps over the (L, R) grid\n")
     for cv in sorted(df["C"].unique()):

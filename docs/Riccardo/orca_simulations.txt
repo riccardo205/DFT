@@ -1,0 +1,733 @@
+## Project and physical system
+
+The system is the Short-2OS / 2-OS all-organic diradical molecule studied in the context of single-molecule transport, Kondo physics, and mechanically/electrically tunable spin exchange.
+
+The molecule is an isolated C54H32 system with two terminal radical centers. In the ORCA atom indexing used here, the nominal radical carbons are approximately atoms 28 and 41 in zero-based indexing.
+
+The molecule is naturally divided into four fragments:
+
+```text
+fragment 1 — left radical-bearing terminal unit
+fragment 2 — left half of central backbone
+fragment 3 — right half of central backbone
+fragment 4 — right radical-bearing terminal unit
+```
+
+The important torsional degrees of freedom are:
+
+```text
+L = left outer torsion
+C = central torsion
+R = right outer torsion
+```
+
+The main physical question is how these torsions control radical localization and the magnetic exchange between the two terminal spins.
+
+The working mechanism is:
+
+```text
+torsion
+→ reduced π overlap / hopping
+→ stronger terminal-radical localization
+→ suppression of kinetic AFM superexchange
+→ near-degenerate HS / BS states
+```
+
+A second emerging ingredient is that the three-dimensional handedness of the conformation can open additional exchange pathways that are not captured by a simple through-bond hopping picture.
+
+---
+
+## ORCA methodology
+
+The main electronic-structure level used for exchange calculations is:
+
+```text
+PBE0
+def2-TZVP
+UKS
+TightSCF
+DEFGRID3
+```
+
+Typical SCF settings:
+
+```text
+%scf
+    MaxIter 500
+    ConvCheckMode 0
+end
+```
+
+Parallelization:
+
+```text
+%pal
+    nprocs 16
+end
+
+%maxcore 2000
+```
+
+High-spin state:
+
+```text
+charge = 0
+multiplicity = 3
+```
+
+Broken-symmetry state:
+
+```text
+charge = 0
+multiplicity = 1
+```
+
+BS calculations are normally initialized using `GuessMix` when starting from scratch. For field sweeps or other continuation calculations, a previously converged BS `.gbw` is preferable.
+
+For geometry optimizations, R2SCAN-3C is used:
+
+```text
+! R2SCAN-3C TightSCF TightOpt UKS
+```
+
+R2SCAN-3C already contains its intended dispersion and basis corrections, so D4 must not be added separately to it.
+
+For PBE0 single points on a fixed geometry, D4 does not affect the HS–BS energy difference because the same geometry is used for both states. Some newer detailed scans therefore use PBE0-D4, while earlier scans used PBE0 without D4; this does not affect ΔE at a shared geometry.
+
+---
+
+## Exchange convention
+
+The primary quantity is always:
+
+\[
+\Delta E = E_{\rm HS}-E_{\rm BS}.
+\]
+
+Therefore:
+
+```text
+ΔE > 0  → BS lower → AFM tendency
+ΔE < 0  → HS slightly lower
+```
+
+Small negative values within roughly ±0.5 meV are described as:
+
+```text
+near-degenerate with small HS preference
+```
+
+and not as robust ferromagnetism.
+
+The Yamaguchi spin-projected value is used only as a secondary diagnostic. In the present dataset it preserves the sign and approximately doubles the raw splitting, so the raw ΔE remains the main quantity.
+
+Typical spin contamination is well controlled:
+
+```text
+HS <S²> ≈ 2.07–2.14
+BS <S²> ≈ 1.07–1.17
+```
+
+The BS solutions retain opposite spin on fragments 1 and 4 and do not collapse to a closed-shell singlet.
+
+---
+
+## Original three-angle geometry scan
+
+A constrained R2SCAN-3C HS geometry scan was performed over:
+
+```text
+L = 0,45,90,135,180°
+C = 20,40,60,80,100,120,140,160,180°
+R = 0,45,90,135,180°
+```
+
+225 geometries total.
+
+The scan showed that the energetically favorable central region is approximately:
+
+```text
+C ≈ 60–120°
+```
+
+with the best constrained point around:
+
+```text
+L045_C100_R045
+```
+
+The actual aromatic-plane angles are more physically meaningful than the literal constrained four-atom dihedrals because the rings distort and accommodate the constraint.
+
+A useful physical structural descriptor is therefore the angle between least-squares ring planes.
+
+---
+
+## Free, unconstrained relaxations
+
+Free HS and BS R2SCAN-3C optimizations were launched from selected points near C = 80–100°.
+
+Eight starting geometries produced five distinct minima.
+
+The best free minimum found, M1, is approximately:
+
+```text
+signed dihedrals:
+L ≈ 36°
+C ≈ 105°
+R ≈ 37°
+
+actual ring-plane angles:
+θL ≈ 36.5°
+θC ≈ 74.5°
+θR ≈ 36.7°
+```
+
+Thus the physically meaningful equilibrium central plane angle is about:
+
+\[
+\boxed{\theta_C\approx75^\circ}
+\]
+
+rather than interpreting the literal signed C ≈ 105° as a 105° loss of conjugation.
+
+M1 lies about 33 meV below the best constrained-grid geometry.
+
+A second minimum M2 has approximately complementary signed torsions:
+
+```text
+L ≈ 145°
+C ≈ 76°
+R ≈ 145°
+```
+
+but almost identical physical plane-angle magnitudes:
+
+```text
+~35° / 75° / 35°
+```
+
+and lies roughly 38 meV above M1. This shows that torsional magnitude and torsional handedness are separate structural variables.
+
+HS and BS independently relax to essentially the same geometry from every tested starting point:
+
+```text
+HS–BS RMSD ≤ ~0.04 Å
+dihedral differences < ~0.6°
+```
+
+The conformational landscape is therefore determined mainly by molecular geometry/sterics/conjugation, while magnetism is a much smaller perturbation.
+
+The free molecule does not remain near outer 90°. Starting from 90° configurations, it rotates away and restores finite AFM exchange. Hence the near-decoupled 90° regime must probably be mechanically stabilized by the junction.
+
+---
+
+## Main PBE0 exchange results from the coarse 3D scan
+
+161 usable geometries have converged PBE0 HS and BS calculations.
+
+The dominant result is the effect of outer orthogonality.
+
+With no outer angle at 90°:
+
+```text
+N = 107
+median ΔE ≈ +3.90 meV
+negative ΔE points = 0
+```
+
+With exactly one outer angle at 90°:
+
+```text
+N = 49
+median ΔE ≈ +0.10 meV
+84% have |ΔE| < 0.5 meV
+```
+
+With both outer angles at 90°:
+
+```text
+N = 5
+ΔE ≈ -0.04 to +0.10 meV
+```
+
+Therefore:
+
+\[
+\boxed{\text{outer orthogonality acts approximately as an exchange-off switch}}
+\]
+
+in the coarse scan.
+
+Radical localization strongly tracks this process.
+
+As the outer torsion approaches orthogonality:
+
+```text
+terminal fragment spin → ~1
+backbone spin → ~0
+```
+
+and AFM exchange decreases.
+
+Across the coarse scan:
+
+```text
+Spearman ρ(ΔE, terminal spin) ≈ -0.85
+```
+
+so stronger localization correlates strongly with weaker AFM exchange.
+
+---
+
+## Simple hopping picture
+
+A useful structural proxy is:
+
+\[
+P=
+\cos^2\theta_L
+\cos^2\theta_C
+\cos^2\theta_R
+\]
+
+using actual ring-plane angles.
+
+The physical motivation is:
+
+\[
+t_{\rm eff}
+\sim
+\cos\theta_L\cos\theta_C\cos\theta_R
+\]
+
+and approximately:
+
+\[
+J_{\rm kinetic}
+\sim
+\frac{4t_{\rm eff}^2}{U}.
+\]
+
+For the coarse scan, P tracks the exchange extremely well:
+
+```text
+Spearman ρ ≈ 0.94
+Pearson r ≈ 0.94
+```
+
+after excluding the very distorted C ≥ 160° structures.
+
+This is an empirical structural descriptor, not a microscopic fitted Hamiltonian.
+
+---
+
+## Fine outer-angle scans
+
+Two new detailed scans were performed at fixed constrained C = 100° with 10° resolution.
+
+Scan A:
+
+```text
+L = R = θ
+θ = 0,10,...,180°
+```
+
+Scan B:
+
+```text
+L = 90°
+R = θ
+θ = 0,10,...,180°
+```
+
+Each geometry was relaxed with constrained R2SCAN-3C and evaluated with PBE0 HS/BS single points.
+
+These scans considerably refine the original picture.
+
+---
+
+## Fine-scan result: local control of radical localization
+
+Each outer torsion predominantly controls the radical directly attached to it.
+
+In Scan B:
+
+```text
+fixed-90° radical spin changes by only ~0.011
+varied-side radical spin changes by ~0.277
+```
+
+The fixed side therefore remains almost completely localized regardless of the opposite torsion.
+
+The varied radical follows almost the same spin-vs-own-plane-angle curve as in the symmetric scan.
+
+This strongly supports:
+
+\[
+\boxed{\text{terminal radical localization is primarily a local torsional property}}
+\]
+
+rather than depending strongly on the torsion of the opposite side.
+
+---
+
+## Fine-scan result: exchange collapse near 90°
+
+For Scan A, where both outer torsions change together, AFM exchange does not simply decay smoothly over the whole range.
+
+On the θ < 90° branch:
+
+```text
+θ = 10°   ΔE ≈ 2.69 meV
+θ = 50–70°   ΔE ≈ 0.72–0.78 meV
+θ = 80°   ΔE ≈ +0.02 meV
+θ = 90°   ΔE ≈ -0.04 meV
+```
+
+Thus the final collapse occurs sharply in the last roughly 10–20° approaching orthogonality.
+
+This is experimentally important because it defines how accurately a junction must stabilize the torsion to reach the sub-meV regime.
+
+---
+
+## Fine-scan result: handedness-dependent exchange
+
+The most important new result comes from Scan B.
+
+With the left outer torsion fixed near 90°:
+
+For the θ < 90° branch:
+
+```text
+all points remain near-degenerate
+ΔE ≈ -0.17 to +0.42 meV
+```
+
+This agrees with the simple “one broken bottleneck switches off exchange” picture.
+
+However, for the θ > 90° branch, AFM exchange re-emerges strongly:
+
+```text
+θ = 150°   ΔE ≈ +0.36 meV
+θ = 160°   ΔE ≈ +1.33 meV
+θ = 170°   ΔE ≈ +2.60 meV
+θ = 180°   ΔE ≈ +2.57 meV
+```
+
+despite the left radical remaining orthogonal and despite the simple hopping product P remaining essentially zero.
+
+This means:
+
+\[
+\boxed{\text{torsional magnitude and radical localization are not sufficient to determine exchange}}
+\]
+
+and the sense of rotation / three-dimensional conformation also matters.
+
+For example, two structures with almost identical physical right-ring angles and almost identical terminal-spin localization can have very different exchange:
+
+```text
+θ = 10°:
+θR plane ≈ 20.7°
+mean terminal spin ≈ 0.911
+ΔE ≈ +0.12 meV
+
+θ = 170°:
+θR plane ≈ 20.0°
+mean terminal spin ≈ 0.910
+ΔE ≈ +2.60 meV
+```
+
+Thus the difference cannot be explained simply by local radical localization.
+
+---
+
+## Possible through-space exchange contribution
+
+One hypothesis for the handedness-dependent re-emergence is a through-space pathway.
+
+On the high-angle branch of Scan B, the orthogonal radical-bearing fragment approaches fragment 3 / the opposite backbone half.
+
+For θ ≈ 160–180°, relevant heavy-atom contacts are around:
+
+```text
+~4.05–4.15 Å
+```
+
+and the re-emergent AFM exchange is largest there.
+
+This is consistent with a through-space contribution bypassing the nominally orthogonal through-bond connection, but the current data only show correlation and do not prove the mechanism.
+
+Potential future tests include spin-density-difference analysis, orbital inspection, altered fragment models, or calculations designed to suppress the proposed through-space pathway.
+
+---
+
+## Conformational energetics of the fine scans
+
+The magnetic decoupling regime is energetically expensive.
+
+For Scan A:
+
+```text
+preferred outer angle ≈ 40°
+both outer angles at 90° cost ≈ 559 meV
+```
+
+For Scan B:
+
+```text
+holding one side at 90° already costs ≈ 250 meV
+taking the second side to 90° adds ~300 meV
+```
+
+Therefore the near-decoupled regime is not the free-molecule equilibrium structure.
+
+The junction likely needs to mechanically stabilize it.
+
+---
+
+## Spin and charge asymmetry
+
+Earlier coarse-scan analysis initially suggested that negative ΔE points might be caused by strong left-right spin asymmetry.
+
+The improved analysis showed this is not supported.
+
+Within the one-outer-90° class, more negative ΔE points actually tend to have more complete localization on both radicals rather than larger spin asymmetry.
+
+Charge asymmetry also does not significantly distinguish the negative and positive near-degenerate cases.
+
+Therefore the current interpretation is:
+
+```text
+localization suppresses AFM exchange
+```
+
+while:
+
+```text
+left-right electronic asymmetry may modulate the residual exchange
+```
+
+but is not the primary cause of exchange collapse.
+
+---
+
+## Electric-field calculations
+
+Electric-field sweeps have now been submitted.
+
+The field is applied approximately along the axis connecting the two radical-bearing fragments, i.e. fragment 1 → fragment 4.
+
+Typical ORCA field input:
+
+```text
+! PBE0 def2-TZVP TightSCF UKS DEFGRID3 NoAutoStart MORead
+
+%moinp "guess.gbw"
+
+%scf
+    MaxIter 500
+    ConvCheckMode 0
+    EField Fx, Fy, Fz
+end
+
+%output
+    Print[P_Hirshfeld] 1
+end
+```
+
+`MORead` tells ORCA to initialize the SCF from molecular orbitals stored in a previous `.gbw`.
+
+```text
+%moinp "guess.gbw"
+```
+
+specifies that file explicitly.
+
+`NoAutoStart` prevents ORCA from silently choosing another same-name restart file.
+
+For a field sweep, HS and BS branches should be continued separately:
+
+```text
+HS F=0 → +F1 → +F2 → ...
+BS F=0 → +F1 → +F2 → ...
+```
+
+and preferably the negative branch should also start independently from F = 0.
+
+This helps avoid accidental switching between electronic SCF branches.
+
+`Print[P_Hirshfeld] 1` requests Hirshfeld charge and spin populations, useful as an independent population-analysis cross-check alongside Mulliken populations.
+
+---
+
+## Four field-sweep configurations
+
+Four geometries were selected to answer complementary questions.
+
+Symmetric decoupled geometry:
+
+```text
+L090_C080_R090
+```
+
+Purpose:
+
+```text
+Can a field create charge/spin asymmetry from an initially symmetric,
+near-degenerate state?
+```
+
+Asymmetric most-negative geometry:
+
+```text
+L135_C120_R090
+```
+
+Purpose:
+
+```text
+Can a field reinforce or oppose an already asymmetric,
+near-HS-favored state?
+```
+
+Approximate mirror:
+
+```text
+L090_C120_R135
+```
+
+Purpose:
+
+```text
+Does reversing the molecular asymmetry reverse the field response?
+```
+
+Moderately coupled AFM reference:
+
+```text
+L180_C080_R000
+```
+
+Purpose:
+
+```text
+Is field sensitivity much weaker when the ordinary AFM exchange
+has not already been mechanically suppressed?
+```
+
+The main field-dependent observables should be:
+
+\[
+\Delta E(F),
+\]
+
+\[
+q_1-q_4,
+\]
+
+\[
+S_1-S_4,
+\]
+
+\[
+\langle S^2\rangle_{\rm HS/BS},
+\]
+
+and the molecular dipole.
+
+The overarching research question is:
+
+```text
+Can mechanical torsion first suppress the dominant AFM exchange,
+creating a near-degenerate spin manifold,
+and can an electric field then tune the residual exchange
+through charge and spin redistribution?
+```
+
+---
+
+## Fluctuation-analysis idea
+
+The intended fluctuation analysis asks how much exchange changes when the molecule is not frozen at one exact geometry.
+
+Instead of a single:
+
+\[
+\Delta E
+\]
+
+the target is a distribution:
+
+\[
+P(\Delta E,T).
+\]
+
+There are two distinct problems.
+
+Intrinsic/free-molecule fluctuations:
+
+```text
+sample around M1
+```
+
+to determine how stable the equilibrium AFM exchange is against vibrations.
+
+Junction-stabilized near-90° fluctuations:
+
+```text
+sample around a mechanically held near-orthogonal geometry
+```
+
+to determine how sensitive the exchange-off state is to small angular motion.
+
+The new 10° scans are especially useful for the second question because they directly show how rapidly ΔE changes around 90°.
+
+A key lesson from the fine scans is that fluctuations must preserve the **signed torsion / handedness**. Equal deviations on opposite sides of 90° are not necessarily equivalent.
+
+For more realistic low-temperature fluctuations, a useful future route is:
+
+```text
+frequency calculation
+→ normal modes
+→ quantum/thermal displaced geometries
+→ PBE0 HS/BS single points
+→ distribution P(ΔE)
+```
+
+At cryogenic temperatures, zero-point motion may be more relevant than classical MD.
+
+---
+
+## Current compact physical picture
+
+The project currently supports the following hierarchy:
+
+```text
+1. Each outer torsion locally controls its adjacent radical localization.
+
+2. Twisting toward 90° suppresses through-bond π hopping.
+
+3. When both outer links are progressively twisted,
+   AFM exchange collapses sharply near orthogonality.
+
+4. A single orthogonal link can suppress the ordinary through-bond
+   exchange, but this is not universally sufficient.
+
+5. Three-dimensional handedness can allow AFM exchange to re-emerge
+   even when one through-bond connection remains orthogonal.
+
+6. A possible explanation is an additional through-space exchange path.
+
+7. The near-decoupled geometry is energetically expensive and therefore
+   likely requires mechanical stabilization by the electrodes.
+
+8. Electric field is being tested as a second control knob:
+   torsion may bring the molecule close to degeneracy,
+   while the field may tune the small residual interaction.
+
+9. Thermal/structural fluctuations should eventually be treated as a
+   distribution of exchange values rather than one fixed J.
+```
+
+The most important conceptual change from the earlier analysis is that the system is **not governed by torsional magnitude alone**. Local radical localization is very cleanly controlled by the magnitude of each outer torsion, but the magnetic exchange also remembers the full three-dimensional conformation and handedness.
