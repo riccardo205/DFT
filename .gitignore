@@ -6,3 +6,6 @@ visualization/pymol_rendered
 visualization/pymol_rendered_cmap
 runs
 orca_test
+
+# orbital cube files (large, regenerated with orca_plot)
+*.cube

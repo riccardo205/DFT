@@ -1,0 +1,281 @@
+[1/29] run2/conf_1
+  uudd not computed, using its spin reverse dduu
+  dduu UCO 355: S = 0.3615, alpha on A 0.02, B 0.10, C 0.15, D 0.72; beta on A 0.08, B 0.02, C 0.77, D 0.13
+  dduu UCO 354: S = 0.4099, alpha on A 0.13, B 0.75, C 0.02, D 0.11; beta on A 0.69, B 0.20, C 0.08, D 0.03
+  run2/conf_1: J_14 (AD) = -7.118 meV;  state dduu, UCO 354, S_UCO = 0.4099
+  orbital 1 (beta): |psi|^2 on A 0.69, on D 0.03
+  orbital 2 (alpha): |psi|^2 on D 0.11, on A 0.13
+  grid: int psi1 psi2 = +0.4100   int |psi1 psi2| = 0.4615
+[2/29] run2/conf_4
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0018, alpha on A 0.02, B 0.00, C 0.01, D 0.97; beta on A 0.12, B 0.87, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0487, alpha on A 0.00, B 0.01, C 0.98, D 0.01; beta on A 0.71, B 0.28, C 0.01, D 0.00
+  run2/conf_4: J_13 (AC) = +1.864 meV;  state dduu, UCO 354, S_UCO = 0.0487
+  orbital 1 (beta): |psi|^2 on A 0.71, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.98, on A 0.00
+  grid: int psi1 psi2 = +0.0487   int |psi1 psi2| = 0.0936
+[3/29] run2/conf_5
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0141, alpha on A 0.01, B 0.00, C 0.04, D 0.95; beta on A 0.04, B 0.94, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0314, alpha on A 0.01, B 0.00, C 0.95, D 0.04; beta on A 0.94, B 0.04, C 0.01, D 0.00
+  run2/conf_5: J_13 (AC) = +7.604 meV;  state dduu, UCO 354, S_UCO = 0.0314
+  orbital 1 (beta): |psi|^2 on A 0.94, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.95, on A 0.01
+  grid: int psi1 psi2 = +0.0316   int |psi1 psi2| = 0.0879
+[4/29] run2/conf_6
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0224, alpha on A 0.02, B 0.00, C 0.85, D 0.13; beta on A 0.01, B 0.98, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0822, alpha on A 0.01, B 0.00, C 0.13, D 0.85; beta on A 0.98, B 0.01, C 0.00, D 0.01
+  run2/conf_6: J_14 (AD) = -10.302 meV;  state dduu, UCO 354, S_UCO = 0.0822
+  orbital 1 (beta): |psi|^2 on A 0.98, on D 0.01
+  orbital 2 (alpha): |psi|^2 on D 0.85, on A 0.01
+  grid: int psi1 psi2 = +0.0822   int |psi1 psi2| = 0.1082
+[5/29] run2/conf_7
+  uudd not computed, using its spin reverse dduu
+  dduu UCO 355: S = 0.0039, alpha on A 0.01, B 0.00, C 0.10, D 0.89; beta on A 0.10, B 0.89, C 0.01, D 0.00
+  dduu UCO 354: S = 0.0400, alpha on A 0.01, B 0.00, C 0.89, D 0.09; beta on A 0.89, B 0.10, C 0.01, D 0.00
+  run2/conf_7: J_13 (AC) = +5.914 meV;  state dduu, UCO 354, S_UCO = 0.0400
+  orbital 1 (beta): |psi|^2 on A 0.89, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.89, on A 0.01
+  grid: int psi1 psi2 = +0.0399   int |psi1 psi2| = 0.1039
+[6/29] run2/conf_10
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0297, alpha on A 0.00, B 0.00, C 0.55, D 0.45; beta on A 0.01, B 0.98, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0607, alpha on A 0.01, B 0.00, C 0.69, D 0.30; beta on A 0.97, B 0.01, C 0.01, D 0.01
+  run2/conf_10: J_13 (AC) = -3.936 meV;  state dduu, UCO 354, S_UCO = 0.0607
+  orbital 1 (beta): |psi|^2 on A 0.97, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.69, on A 0.01
+  grid: int psi1 psi2 = +0.0607   int |psi1 psi2| = 0.0900
+[7/29] run2/conf_11
+  uudd not computed, using its spin reverse dduu
+  dduu UCO 355: S = 0.0124, alpha on A 0.02, B 0.00, C 0.96, D 0.02; beta on A 0.01, B 0.98, C 0.00, D 0.01
+  dduu UCO 354: S = 0.1158, alpha on A 0.02, B 0.00, C 0.02, D 0.97; beta on A 0.97, B 0.01, C 0.00, D 0.02
+  run2/conf_11: J_14 (AD) = -21.239 meV;  state dduu, UCO 354, S_UCO = 0.1158
+  orbital 1 (beta): |psi|^2 on A 0.97, on D 0.02
+  orbital 2 (alpha): |psi|^2 on D 0.97, on A 0.02
+  grid: int psi1 psi2 = +0.1158   int |psi1 psi2| = 0.1457
+[8/29] run2/conf_13
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.3764, alpha on A 0.11, B 0.79, C 0.03, D 0.07; beta on A 0.66, B 0.21, C 0.11, D 0.02
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.4045, alpha on A 0.02, B 0.09, C 0.24, D 0.66; beta on A 0.10, B 0.03, C 0.77, D 0.10
+  run2/conf_13: J_14 (AD) = -6.880 meV;  state dduu, UCO 354, S_UCO = 0.4045
+  orbital 1 (beta): |psi|^2 on A 0.10, on D 0.10
+  orbital 2 (alpha): |psi|^2 on D 0.66, on A 0.02
+  grid: int psi1 psi2 = +0.4045   int |psi1 psi2| = 0.4572
+[9/29] run2/conf_14
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0086, alpha on A 0.00, B 0.01, C 0.35, D 0.65; beta on A 0.98, B 0.02, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0539, alpha on A 0.00, B 0.01, C 0.65, D 0.34; beta on A 0.02, B 0.97, C 0.00, D 0.01
+  run2/conf_14: J_23 (BC) = -3.366 meV;  state dduu, UCO 354, S_UCO = 0.0539
+  orbital 1 (beta): |psi|^2 on B 0.97, on C 0.00
+  orbital 2 (alpha): |psi|^2 on C 0.65, on B 0.01
+  grid: int psi1 psi2 = +0.0539   int |psi1 psi2| = 0.0854
+[10/29] run2/conf_15
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0148, alpha on A 0.01, B 0.00, C 0.04, D 0.95; beta on A 0.13, B 0.86, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0406, alpha on A 0.00, B 0.00, C 0.95, D 0.05; beta on A 0.95, B 0.03, C 0.02, D 0.00
+  run2/conf_15: J_13 (AC) = +10.728 meV;  state dduu, UCO 354, S_UCO = 0.0406
+  orbital 1 (beta): |psi|^2 on A 0.95, on C 0.02
+  orbital 2 (alpha): |psi|^2 on C 0.95, on A 0.00
+  grid: int psi1 psi2 = +0.0406   int |psi1 psi2| = 0.0977
+[11/29] run2/conf_16
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0027, alpha on A 0.00, B 0.00, C 0.20, D 0.79; beta on A 0.02, B 0.98, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0384, alpha on A 0.01, B 0.00, C 0.80, D 0.20; beta on A 0.78, B 0.21, C 0.00, D 0.01
+  run2/conf_16: J_14 (AD) = +3.939 meV;  state dduu, UCO 354, S_UCO = 0.0384
+  orbital 1 (beta): |psi|^2 on A 0.78, on D 0.01
+  orbital 2 (alpha): |psi|^2 on D 0.20, on A 0.01
+  grid: int psi1 psi2 = +0.0384   int |psi1 psi2| = 0.0589
+[12/29] run2/conf_19
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0127, alpha on A 0.01, B 0.00, C 0.26, D 0.73; beta on A 0.04, B 0.96, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.1544, alpha on A 0.02, B 0.00, C 0.72, D 0.26; beta on A 0.84, B 0.13, C 0.01, D 0.01
+  run2/conf_19: J_13 (AC) = -23.657 meV;  state dduu, UCO 354, S_UCO = 0.1544
+  orbital 1 (beta): |psi|^2 on A 0.84, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.72, on A 0.02
+  grid: int psi1 psi2 = +0.1543   int |psi1 psi2| = 0.1815
+[13/29] run2/conf_21
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0022, alpha on A 0.01, B 0.00, C 0.02, D 0.97; beta on A 0.03, B 0.97, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.1423, alpha on A 0.02, B 0.00, C 0.96, D 0.02; beta on A 0.83, B 0.15, C 0.02, D 0.00
+  run2/conf_21: J_13 (AC) = -28.657 meV;  state dduu, UCO 354, S_UCO = 0.1423
+  orbital 1 (beta): |psi|^2 on A 0.83, on C 0.02
+  orbital 2 (alpha): |psi|^2 on C 0.96, on A 0.02
+  grid: int psi1 psi2 = +0.1422   int |psi1 psi2| = 0.1700
+[14/29] run2/conf_22
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0057, alpha on A 0.00, B 0.00, C 0.05, D 0.95; beta on A 0.03, B 0.96, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0512, alpha on A 0.00, B 0.01, C 0.95, D 0.04; beta on A 0.85, B 0.14, C 0.00, D 0.01
+  run2/conf_22: J_13 (AC) = -4.688 meV;  state dduu, UCO 354, S_UCO = 0.0512
+  orbital 1 (beta): |psi|^2 on A 0.85, on C 0.00
+  orbital 2 (alpha): |psi|^2 on C 0.95, on A 0.00
+  grid: int psi1 psi2 = +0.0512   int |psi1 psi2| = 0.0841
+[15/29] run2/conf_23
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0021, alpha on A 0.00, B 0.00, C 0.77, D 0.22; beta on A 0.04, B 0.96, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0130, alpha on A 0.00, B 0.00, C 0.22, D 0.77; beta on A 0.72, B 0.27, C 0.01, D 0.00
+  run2/conf_23: J_13 (AC) = +1.250 meV;  state dduu, UCO 354, S_UCO = 0.0130
+  orbital 1 (beta): |psi|^2 on A 0.72, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.22, on A 0.00
+  grid: int psi1 psi2 = +0.0129   int |psi1 psi2| = 0.0325
+[16/29] run2/conf_26
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0102, alpha on A 0.02, B 0.00, C 0.90, D 0.08; beta on A 0.01, B 0.97, C 0.02, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0524, alpha on A 0.01, B 0.00, C 0.08, D 0.90; beta on A 0.98, B 0.01, C 0.00, D 0.01
+  run2/conf_26: J_14 (AD) = -3.068 meV;  state dduu, UCO 354, S_UCO = 0.0524
+  orbital 1 (beta): |psi|^2 on A 0.98, on D 0.01
+  orbital 2 (alpha): |psi|^2 on D 0.90, on A 0.01
+  grid: int psi1 psi2 = +0.0524   int |psi1 psi2| = 0.1042
+[17/29] run2/conf_27
+  uudd not computed, using its spin reverse dduu
+  dduu UCO 355: S = 0.0091, alpha on A 0.01, B 0.00, C 0.84, D 0.15; beta on A 0.45, B 0.54, C 0.00, D 0.01
+  dduu UCO 354: S = 0.0210, alpha on A 0.01, B 0.00, C 0.15, D 0.84; beta on A 0.54, B 0.45, C 0.00, D 0.01
+  run2/conf_27: J_14 (AD) = +5.470 meV;  state dduu, UCO 354, S_UCO = 0.0210
+  orbital 1 (beta): |psi|^2 on A 0.54, on D 0.01
+  orbital 2 (alpha): |psi|^2 on D 0.84, on A 0.01
+  grid: int psi1 psi2 = +0.0211   int |psi1 psi2| = 0.0818
+[18/29] run2/conf_28
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0063, alpha on A 0.01, B 0.00, C 0.21, D 0.77; beta on A 0.18, B 0.81, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0310, alpha on A 0.01, B 0.00, C 0.78, D 0.21; beta on A 0.81, B 0.18, C 0.01, D 0.00
+  run2/conf_28: J_13 (AC) = +5.451 meV;  state dduu, UCO 354, S_UCO = 0.0310
+  orbital 1 (beta): |psi|^2 on A 0.81, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.78, on A 0.01
+  grid: int psi1 psi2 = +0.0310   int |psi1 psi2| = 0.0931
+[19/29] run2/conf_31
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0014, alpha on A 0.00, B 0.00, C 0.98, D 0.02; beta on A 0.01, B 0.98, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0377, alpha on A 0.00, B 0.00, C 0.02, D 0.98; beta on A 0.98, B 0.01, C 0.01, D 0.00
+  run2/conf_31: J_14 (AD) = -2.030 meV;  state dduu, UCO 354, S_UCO = 0.0377
+  orbital 1 (beta): |psi|^2 on A 0.98, on D 0.00
+  orbital 2 (alpha): |psi|^2 on D 0.98, on A 0.00
+  grid: int psi1 psi2 = +0.0376   int |psi1 psi2| = 0.0538
+[20/29] run2/conf_33
+  uudd not computed, using its spin reverse dduu
+  dduu UCO 355: S = 0.0167, alpha on A 0.00, B 0.01, C 0.02, D 0.97; beta on A 0.19, B 0.80, C 0.01, D 0.00
+  dduu UCO 354: S = 0.0234, alpha on A 0.00, B 0.00, C 0.97, D 0.03; beta on A 0.81, B 0.19, C 0.01, D 0.00
+  run2/conf_33: J_23 (BC) = +7.191 meV;  state dduu, UCO 354, S_UCO = 0.0234
+  orbital 1 (beta): |psi|^2 on B 0.19, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.97, on B 0.00
+  grid: int psi1 psi2 = +0.0234   int |psi1 psi2| = 0.0491
+[21/29] run2/conf_34
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0086, alpha on A 0.01, B 0.01, C 0.16, D 0.82; beta on A 0.13, B 0.86, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0749, alpha on A 0.01, B 0.01, C 0.82, D 0.16; beta on A 0.79, B 0.20, C 0.00, D 0.00
+  run2/conf_34: J_13 (AC) = -11.118 meV;  state dduu, UCO 354, S_UCO = 0.0749
+  orbital 1 (beta): |psi|^2 on A 0.79, on C 0.00
+  orbital 2 (alpha): |psi|^2 on C 0.82, on A 0.01
+  grid: int psi1 psi2 = +0.0749   int |psi1 psi2| = 0.1118
+[22/29] run2/conf_36
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.3484, alpha on A 0.10, B 0.86, C 0.01, D 0.03; beta on A 0.70, B 0.25, C 0.03, D 0.02
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.4075, alpha on A 0.01, B 0.03, C 0.27, D 0.69; beta on A 0.03, B 0.01, C 0.85, D 0.11
+  run2/conf_36: J_14 (AD) = +4.104 meV;  state dduu, UCO 355, S_UCO = 0.3484
+  orbital 1 (beta): |psi|^2 on A 0.70, on D 0.02
+  orbital 2 (alpha): |psi|^2 on D 0.03, on A 0.10
+  grid: int psi1 psi2 = +0.3484   int |psi1 psi2| = 0.4101
+[23/29] run2/conf_37
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.3573, alpha on A 0.04, B 0.19, C 0.14, D 0.64; beta on A 0.12, B 0.05, C 0.69, D 0.14
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.4068, alpha on A 0.09, B 0.69, C 0.04, D 0.18; beta on A 0.62, B 0.21, C 0.14, D 0.03
+  run2/conf_37: J_14 (AD) = -1.898 meV;  state dduu, UCO 354, S_UCO = 0.4068
+  orbital 1 (beta): |psi|^2 on A 0.62, on D 0.03
+  orbital 2 (alpha): |psi|^2 on D 0.18, on A 0.09
+  grid: int psi1 psi2 = +0.4068   int |psi1 psi2| = 0.4557
+[24/29] run2/conf_38
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.3015, alpha on A 0.07, B 0.01, C 0.17, D 0.75; beta on A 0.03, B 0.07, C 0.79, D 0.10
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.3879, alpha on A 0.79, B 0.12, C 0.03, D 0.05; beta on A 0.21, B 0.70, C 0.08, D 0.01
+  run2/conf_38: J_24 (BD) = +3.980 meV;  state dduu, UCO 355, S_UCO = 0.3015
+  orbital 1 (beta): |psi|^2 on B 0.07, on D 0.10
+  orbital 2 (alpha): |psi|^2 on D 0.75, on B 0.01
+  grid: int psi1 psi2 = +0.3015   int |psi1 psi2| = 0.3724
+[25/29] run2/conf_39
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0185, alpha on A 0.01, B 0.00, C 0.97, D 0.01; beta on A 0.70, B 0.28, C 0.01, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0558, alpha on A 0.00, B 0.02, C 0.01, D 0.97; beta on A 0.31, B 0.67, C 0.00, D 0.01
+  run2/conf_39: J_13 (AC) = +2.610 meV;  state dduu, UCO 355, S_UCO = 0.0185
+  orbital 1 (beta): |psi|^2 on A 0.70, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.97, on A 0.01
+  grid: int psi1 psi2 = +0.0184   int |psi1 psi2| = 0.0905
+[26/29] run3/docked_1
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0117, alpha on A 0.00, B 0.00, C 0.19, D 0.80; beta on A 0.11, B 0.89, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0262, alpha on A 0.00, B 0.01, C 0.80, D 0.19; beta on A 0.89, B 0.10, C 0.01, D 0.00
+  run3/docked_1: J_13 (AC) = -0.772 meV;  state dduu, UCO 354, S_UCO = 0.0262
+  orbital 1 (beta): |psi|^2 on A 0.89, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.80, on A 0.00
+  grid: int psi1 psi2 = +0.0262   int |psi1 psi2| = 0.0488
+[27/29] run3/docked_2
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0011, alpha on A 0.00, B 0.00, C 0.11, D 0.89; beta on A 1.00, B 0.00, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0564, alpha on A 0.00, B 0.01, C 0.89, D 0.09; beta on A 0.01, B 0.98, C 0.01, D 0.00
+  run3/docked_2: J_23 (BC) = -2.830 meV;  state dduu, UCO 354, S_UCO = 0.0564
+  orbital 1 (beta): |psi|^2 on B 0.98, on C 0.01
+  orbital 2 (alpha): |psi|^2 on C 0.89, on B 0.01
+  grid: int psi1 psi2 = +0.0564   int |psi1 psi2| = 0.0849
+[28/29] run3/docked_3
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0019, alpha on A 0.01, B 0.00, C 0.36, D 0.64; beta on A 0.14, B 0.86, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.0035, alpha on A 0.00, B 0.00, C 0.65, D 0.34; beta on A 0.85, B 0.13, C 0.00, D 0.02
+  run3/docked_3: J_14 (AD) = +0.197 meV;  state dduu, UCO 354, S_UCO = 0.0035
+  orbital 1 (beta): |psi|^2 on A 0.85, on D 0.02
+  orbital 2 (alpha): |psi|^2 on D 0.34, on A 0.00
+  grid: int psi1 psi2 = +0.0035   int |psi1 psi2| = 0.0472
+[29/29] run3/docked_4
+  uudd not computed, using its spin reverse dduu
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 355: S = 0.0001, alpha on A 0.00, B 0.00, C 1.00, D 0.00; beta on A 1.00, B 0.00, C 0.00, D 0.00
+  orca_plot: 2 cube(s) from dduu.uco (grid 100) ...
+  dduu UCO 354: S = 0.1076, alpha on A 0.00, B 0.01, C 0.01, D 0.97; beta on A 0.01, B 0.97, C 0.00, D 0.01
+  run3/docked_4: J_24 (BD) = -11.154 meV;  state dduu, UCO 354, S_UCO = 0.1076
+  orbital 1 (beta): |psi|^2 on B 0.97, on D 0.01
+  orbital 2 (alpha): |psi|^2 on D 0.97, on B 0.01
+  grid: int psi1 psi2 = +0.1076   int |psi1 psi2| = 0.1311
+wrote /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/output/orca/dimers_run2/dimer_overlap/overlap_sign_table.csv (29 dimers)

@@ -1,0 +1,71 @@
+% needs \usepackage{longtable,booktabs,xcolor}
+\definecolor{famFM}{HTML}{B03A2E}
+\definecolor{famAFM}{HTML}{1F4E79}
+\definecolor{famNetwork}{HTML}{6C3483}
+\definecolor{famWeak}{HTML}{1E7F5C}
+\definecolor{famUnmapped}{HTML}{7F7F7F}
+{\footnotesize
+\setlength{\LTleft}{0pt}\setlength{\LTright}{0pt}
+\begin{longtable}{@{\extracolsep{\fill}}llrlrrrrrrr@{}}
+\caption{Broken-symmetry results of all fitted dimers, by ascending energy. Dimer: run, relaxation set of
+  run4 (f free, dh / d90 fixed C dihedral / double 90$^\circ$), conformer (c conf, d docked, p packmol).
+  Family: magnetic family (\textcolor{famFM}{\textbf{FM}} (A), \textcolor{famAFM}{\textbf{AFM}} (B), \textcolor{famNetwork}{\textbf{Network}} (C), \textcolor{famWeak}{\textbf{Weak}} (D), \textcolor{famUnmapped}{\textbf{Unmapped}} (F)). $\Delta E$: r2SCAN-3c energy of the relaxed dimer relative to
+  the lowest (meV); GS: lowest PBE0 broken-symmetry configuration (spins of radicals A B C D, A up).
+  $J_{ij}$ (meV, $\hat H=-\sum_{i<j}J_{ij}\hat S_i\cdot\hat S_j$, $J>0$ FM): sites 1--4 = radicals A--D,
+  $J_{12}$, $J_{34}$ intramolecular. rms: fit residual of the 8 configurations (meV; ex.\ = exactly
+  determined by 7). $^{c}$ torsion-constrained relaxation;
+  $^{\S}$ strong coupling, couplings only qualitative.}\label{tab:bs_summary_all_runs}\\
+\toprule
+Dimer & Family & $\Delta E$ & GS & $J_{12}$ & $J_{13}$ & $J_{14}$ & $J_{23}$ & $J_{24}$ & $J_{34}$ & rms \\
+\midrule
+\endfirsthead
+\toprule
+Dimer & Family & $\Delta E$ & GS & $J_{12}$ & $J_{13}$ & $J_{14}$ & $J_{23}$ & $J_{24}$ & $J_{34}$ & rms \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+2\_c7 & \textcolor{famFM}{\textbf{FM}} & 0 & udud & -0.51 & +5.91 & -1.27 & -1.35 & +0.61 & -0.15 & 0.208 \\
+2\_c28 & \textcolor{famFM}{\textbf{FM}} & 3 & udud & -1.31 & +5.45 & -0.35 & -0.22 & +0.01 & -1.66 & 0.002 \\
+2\_c27 & \textcolor{famFM}{\textbf{FM}} & 5 & uddu & -2.69 & +0.41 & +5.47 & +1.11 & -0.16 & -2.29 & 0.136 \\
+4f\_p1 & \textcolor{famAFM}{\textbf{AFM}} & 66 & uddu & -3.23 & -7.18 & +0.36 & -0.67 & -1.14 & -2.81 & 0.033 \\
+2\_c25 & \textcolor{famFM}{\textbf{FM}} & 108 & uuud & -1.61 & +0.39 & -1.41 & +7.11 & +0.15 & -2.43 & 0.019 \\
+2\_c32 & \textcolor{famFM}{\textbf{FM}} & 115 & udud & -1.61 & -1.49 & +0.27 & +0.17 & +6.10 & -2.51 & 0.044 \\
+2\_c29 & \textcolor{famNetwork}{\textbf{Network}} & 200 & udud & -2.15 & +1.47 & -0.90 & +2.34 & +0.73 & -2.65 & 0.044 \\
+2\_c5 & \textcolor{famFM}{\textbf{FM}} & 206 & udud & -3.60 & +7.60 & +0.00 & +0.20 & -0.02 & -3.67 & 0.041 \\
+2\_c11 & \textcolor{famAFM}{\textbf{AFM}} & 207 & udud & -2.94 & +0.12 & -21.24 & -0.16 & +0.23 & -1.15 & 0.010 \\
+4f\_d4 & \textcolor{famNetwork}{\textbf{Network}} & 208 & uddu & -2.73 & +0.42 & +2.22 & +0.16 & +0.74 & -4.69 & 0.006 \\
+2\_c30 & \textcolor{famNetwork}{\textbf{Network}} & 235 & uddd & -3.21 & -7.66 & -0.16 & -0.02 & +6.32 & -1.02 & 0.072 \\
+2\_c31 & \textcolor{famNetwork}{\textbf{Network}} & 250 & udud & -1.90 & +0.14 & -2.03 & +0.53 & +0.19 & -2.17 & 0.005 \\
+2\_c26 & \textcolor{famNetwork}{\textbf{Network}} & 303 & udud & -1.29 & +1.75 & -3.07 & -0.58 & +0.29 & -1.23 & 0.006 \\
+2\_c33 & \textcolor{famNetwork}{\textbf{Network}} & 317 & uddu & -3.97 & +1.40 & +0.06 & +7.19 & -0.36 & -3.16 & 0.008 \\
+2\_c14 & \textcolor{famNetwork}{\textbf{Network}} & 346 & udud & -5.17 & -0.30 & +0.19 & -3.37 & -0.38 & -1.31 & 0.020 \\
+4f\_d1 & \textcolor{famWeak}{\textbf{Weak}} & 351 & uddu & -2.92 & -0.47 & +0.50 & +0.38 & -0.49 & -2.87 & 0.038 \\
+4d90\_d4$^{c}$ & \textcolor{famNetwork}{\textbf{Network}} & 364 & uddu & -1.98 & +0.39 & +3.03 & +0.20 & +0.69 & -2.19 & 0.052 \\
+2\_c12 & \textcolor{famNetwork}{\textbf{Network}} & 376 & udud & -4.71 & -0.53 & -0.29 & -7.74 & -0.08 & -4.85 & 0.052 \\
+4dh\_d4$^{c}$ & \textcolor{famNetwork}{\textbf{Network}} & 396 & uddu & -1.71 & +0.14 & +2.78 & +0.13 & +0.38 & -2.53 & 0.031 \\
+4f\_d3 & \textcolor{famFM}{\textbf{FM}} & 402 & uddu & -2.41 & +0.16 & +7.20 & +0.18 & -0.82 & -2.73 & 0.007 \\
+4f\_p2 & \textcolor{famNetwork}{\textbf{Network}} & 424 & uddu & -2.80 & -0.10 & +1.13 & +0.06 & +0.20 & -2.65 & 0.021 \\
+2\_c6 & \textcolor{famAFM}{\textbf{AFM}} & 443 & udud & -1.76 & -0.83 & -10.30 & -0.99 & +0.08 & -2.77 & 0.012 \\
+3\_d1$^{c}$ & \textcolor{famNetwork}{\textbf{Network}} & 1001 & uudd & +0.49 & -0.77 & +0.24 & +0.46 & -0.32 & +0.96 & 0.008 \\
+3\_d2$^{c}$ & \textcolor{famAFM}{\textbf{AFM}} & 1140 & uudu & +0.29 & +0.17 & -0.08 & -2.83 & +0.21 & -0.47 & 0.039 \\
+3\_d4$^{c}$ & \textcolor{famAFM}{\textbf{AFM}} & 1246 & uudd & +0.51 & +0.08 & +0.01 & +0.06 & -11.15 & +0.45 & ex. \\
+3\_d3$^{c}$ & \textcolor{famWeak}{\textbf{Weak}} & 1287 & uuuu & +0.75 & +0.11 & +0.20 & +0.02 & +0.16 & +0.91 & 0.019 \\
+2\_c39$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 1743 & udud & -457.43 & +2.61 & -0.65 & +0.44 & -1.16 & -4.91 & 0.082 \\
+2\_c19$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 1808 & uddu & -528.83 & -23.66 & +1.12 & -1.31 & -1.10 & -0.75 & 0.076 \\
+2\_c4$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 1821 & udud & -332.35 & +1.86 & -0.43 & -0.60 & +0.02 & -1.51 & 0.027 \\
+2\_c10$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 1887 & uddu & -3.08 & -3.94 & +1.50 & -0.05 & -1.43 & -363.36 & 0.024 \\
+2\_c21$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 1900 & uddu & -469.39 & -28.66 & -0.51 & -1.79 & +0.20 & -2.23 & 0.017 \\
+2\_c9$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 1997 & udud & -2.79 & +2.43 & -0.47 & +0.45 & -0.13 & -473.23 & 0.017 \\
+2\_c8$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 2020 & udud & -4.80 & +2.28 & -14.49 & +0.32 & +0.34 & -514.34 & 0.011 \\
+2\_c22$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 2036 & uddu & -485.45 & -4.69 & +3.25 & +0.14 & -0.22 & -1.79 & 0.061 \\
+2\_c34$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 2121 & uddu & -434.11 & -11.12 & +0.33 & +6.68 & -0.63 & -8.01 & 0.063 \\
+2\_c15$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 2182 & udud & -475.57 & +10.73 & -0.50 & +0.95 & -0.20 & -2.50 & 0.001 \\
+2\_c23$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 2246 & udud & -495.39 & +1.25 & -0.04 & -0.02 & -0.16 & -3.06 & 0.024 \\
+2\_c16$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 2336 & uddu & -497.02 & -1.49 & +3.94 & -0.61 & +0.39 & -1.84 & 0.052 \\
+2\_c36$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 3489 & uddu & -384.66 & +0.17 & +4.10 & +0.38 & +0.67 & -454.47 & ex. \\
+2\_c13$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 3507 & udud & -429.98 & +0.74 & -6.88 & +0.46 & +1.37 & -454.93 & ex. \\
+2\_c38$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 3585 & uddu & -440.26 & -3.02 & +2.72 & +0.13 & +3.98 & -343.74 & ex. \\
+2\_c37$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 3655 & udud & -451.42 & +0.06 & -1.90 & -0.26 & +0.13 & -449.80 & ex. \\
+2\_c1$^{\S}$ & \textcolor{famUnmapped}{\textbf{Unmapped}} & 3988 & udud & -497.81 & +3.25 & -7.12 & +0.52 & +0.14 & -438.13 & ex. \\
+\end{longtable}}

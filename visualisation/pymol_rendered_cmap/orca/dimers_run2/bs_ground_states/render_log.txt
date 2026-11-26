@@ -1,0 +1,17 @@
+[ok] dudu (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run2_conf_9/dudu.png
+[ok] dudu (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run2_conf_12/dudu.png
+[ok] uuud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run2_conf_25/uuud.png
+[ok] dudu (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run2_conf_29/dudu.png
+[ok] duuu (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run2_conf_30/duuu.png
+[ok] dudu (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run2_conf_32/dudu.png
+[ok] duud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run4_fixC_dihedral_docked_4/duud.png
+[ok] duud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run4_fixC_double90_docked_4/duud.png
+[ok] duud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run4_free_docked_1/duud.png
+[ok] duud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run4_free_docked_3/duud.png
+[ok] duud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run4_free_docked_4/duud.png
+[ok] duud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run4_free_packmol_1/duud.png
+[ok] duud (geometry: geometry.xyz) -> /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/renders/run4_free_packmol_2/duud.png
+[!] no finished BS outputs, skipped (8): run2/conf_3, run2/conf_20, run2/conf_24, run2/conf_35, run3/docked_6, run3/packmol_1, run3/packmol_2, run3/packmol_3
+wrote /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/bs_ground_states.pdf (2 pages) and bs_ground_states_page1..2.png
+[!] no finished BS outputs, skipped (8): run2/conf_3, run2/conf_20, run2/conf_24, run2/conf_35, run3/docked_6, run3/packmol_1, run3/packmol_2, run3/packmol_3
+wrote /Users/riccardo/Documenti/TuDelft/phd/Analysis_Code/DFT/visualisation/pymol_rendered_cmap/orca/dimers_run2/bs_ground_states/bs_ground_states.pdf (2 pages) and bs_ground_states_page1..2.png

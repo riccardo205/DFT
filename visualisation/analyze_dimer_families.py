@@ -405,6 +405,9 @@ def main():
     Jt = pd.concat([pd.read_csv(CSV_ROOT / f"{r}_broken_symmetry" / "exchange_couplings.csv").assign(run=r)
                     for r in RUNS if (CSV_ROOT / f"{r}_broken_symmetry" / "exchange_couplings.csv").exists()])
     Jt = Jt[Jt["stage"] == "relaxed"]
+    # BS single points on a not-converged relaxation geometry (run2 conf_12/25/29/30/32: BS run on the geometry
+    # before the relaxation was reconverged) do not belong to the structure analysed here
+    Jt = Jt[Jt["relaxation"].fillna("") != "not_converged"]
     mag, corr_rows, level_rows = [], [], []
     for _, j in Jt.iterrows():
         key = f"{j['run']}/{j['dimer']}"

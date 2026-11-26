@@ -1,0 +1,2 @@
+dimer,state,uco,S_uco,alpha_on_A,alpha_on_B,alpha_on_C,alpha_on_D,beta_on_A,beta_on_B,beta_on_C,beta_on_D,chosen,pair,J_meV,orbital1,orbital2,int_psi1_psi2,int_abs_psi1_psi2,orbital2_sign_flipped
+run2/conf_11,uuud,354,0.11529,0.9729337698079906,0.008304435166483194,0.0026086248497276614,0.016153170175799078,0.017162451137457187,0.0012206038736057411,0.006336757752053342,0.9752801872368839,True,J_14 (AD),-21.238891023716786,A (alpha),D (beta),0.1152807319177313,0.14597240134362485,False

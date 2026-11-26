@@ -346,3 +346,123 @@ Lowest-ΔE_geom member of each magnetic family with a stable fit:
 | F: four-spin mapping fails | run2/conf_39 | S36 | 1743.5 | AB | -457.43 | 0 |
 | F: four-spin mapping fails | run2/conf_19 | S37 | 1808.5 | AB | -528.83 | 0 |
 
+
+---
+
+# Update 2026-11-11: extended set (new broken-symmetry results for run2 and run4)
+
+Everything above is the analysis of 2026-10-21 and is kept unchanged. **Its plots in `plots/` have been overwritten with the extended set.** The tables above are the old ones, and their CSV is kept as [dimer_families_2026-10-21.csv](dimer_families_2026-10-21.csv). The analysis was rerun with the same functions: `Read_output_bs_orca.py` now also covers run4, whose nested `<set>/<dimer>` folders it can now read, and `analyze_dimer_families.py` was rerun unchanged except for one filter (see *Excluded*). The new data are in [dimer_families.csv](dimer_families.csv), [rmsd_matrix.csv](rmsd_matrix.csv) and [heisenberg_spectra.csv](heisenberg_spectra.csv). The complete regenerated report, with every table for the extended set, is [dimer_families_full_2026-11-11.md](dimer_families_full_2026-11-11.md). The LaTeX tables are in `visualisation/latex_tables/orca/dimers_run2/<run>_broken_symmetry/` (`<run>_bs_energies.tex`, `<run>_exchange.tex`), now including run4.
+
+## What is new
+
+- **run2:** two dimers now have all 8 configurations, conf_8 (previously 2/8) and conf_9. The relaxation summary also includes the reconverged relaxations: 38 of 39 converged, against 30 before.
+- **run4:** all 7 broken-symmetry dimers are complete and fitted (8 configurations, overdetermined, RMS residual ≤ 0.05 meV): free/docked_1, free/docked_3, free/docked_4, free/packmol_1, free/packmol_2, fixC_dihedral/docked_4 and fixC_double90/docked_4.
+- **run3:** unchanged.
+
+**Excluded.** The new BS results of run2 conf_12, 25, 29, 30 and 32 were computed on the geometry *before* their relaxations were reconverged; the BS folders still hold the 8 Oct `geometry.xyz`. The maximum atom displacement from the reconverged structure is 0.3–2.0 Å. These rows are kept in `bs_energies.csv` / `exchange_couplings.csv` with `relaxation = not_converged` (marked † in the tex tables). They are left out of the families analysis, which uses the reconverged structures, so these five dimers still read "no BS data". Their BS has to be rerun on the reconverged geometry. The BS jobs of conf_3, 20, 24 and 35 failed at start (`geometry.xyz not found` on the cluster).
+
+## Coverage
+
+| run | relaxed dimers | converged | relaxation | with fitted J (10-21 → now) |
+|---|---|---|---|---|
+| run2 | 39 | 38 | free | 25 → 27 |
+| run3 | 9 | 7 | constrained torsions | 4 → 4 |
+| run4 | 18 | 16 | constrained torsions, free | 0 → 7 |
+
+## Structural families
+
+With the reconverged run2 relaxations, the 66 relaxed dimers form **56 structural families** (previously 58), and **7 contain more than one relaxation** (previously 5). The two new multi-member families are run2 pairs:
+
+| struct_family (new numbering) | members | ΔE_geom (meV) |
+|---|---|---|
+| S03 | run2/conf_25, run2/conf_32 | 108.1, 115.1 |
+| S39 | run2/conf_20, run2/conf_21 | 1899.7, 1907.3 |
+
+The S labels are ordered by energy and were reassigned. S01, S02, S07, S20 and S21 have the same members as before, but most other labels shifted (e.g. the old S08 conf_31 is now S09). Use the CSV of the matching date when comparing labels.
+
+## Magnetic families
+
+| magnetic family | 2026-10-21 | now |
+|---|---|---|
+| A: weakly coupled molecules | 1 | 2 |
+| B: dominant FM intermolecular | 4 | 5 |
+| D: dominant AFM intermolecular | 4 | 5 |
+| E: competing network | 5 | 9 |
+| F: four-spin mapping fails | 20 | 21 |
+| no BS data | 32 | 24 |
+
+**No new kind of magnetic family appears.** All new dimers fall into the existing classes A, B, D, E and F. Every dimer classified on 2026-10-21 keeps its family. The new assignments are:
+
+| key | struct_family | ΔE_geom (meV) | magnetic family | J_12 | J_13 | J_14 | J_23 | J_24 | J_34 (meV) | dominant |
+|---|---|---|---|---|---|---|---|---|---|---|
+| run4/free/packmol_1 | S02 | 66.4 | D: dominant AFM intermolecular | -3.23 | -7.18 | +0.36 | -0.67 | -1.14 | -2.81 | AC |
+| run4/free/docked_4 | S07 | 208.1 | E: competing network | -2.73 | +0.42 | +2.22 | +0.16 | +0.74 | -4.69 | CD |
+| run4/free/docked_1 | S13 | 350.7 | A: weakly coupled molecules | -2.92 | -0.47 | +0.50 | +0.38 | -0.49 | -2.87 | AB |
+| run4/fixC_double90/docked_4 | S07 | 363.8 | E: competing network | -1.98 | +0.39 | +3.03 | +0.20 | +0.69 | -2.19 | AD |
+| run4/fixC_dihedral/docked_4 | S07 | 396.5 | E: competing network | -1.71 | +0.14 | +2.78 | +0.13 | +0.38 | -2.53 | AD |
+| run4/free/docked_3 | S15 | 402.3 | B: dominant FM intermolecular | -2.41 | +0.16 | +7.20 | +0.18 | -0.82 | -2.73 | AD |
+| run4/free/packmol_2 | S16 | 424.0 | E: competing network | -2.80 | -0.10 | +1.13 | +0.06 | +0.20 | -2.65 | AB |
+| run2/conf_9 | S40 | 1996.6 | F: four-spin mapping fails | -2.79 | +2.43 | -0.47 | +0.45 | -0.13 | -473.23 | CD |
+
+conf_8 was already in F and stays there; with all 8 states now available, J_34 = −514 meV. Both conf_8 and conf_9 have a planarised central link (fragment moments unstable), like the rest of F.
+
+**Main points of the extension**
+
+1. **run4 dimers all keep four stable local moments** (|s| = 0.99–1.01 in every state). None falls in F, in contrast to the high-energy run2 dimers. All 7 have a twisted link with intramolecular J of −1.7 to −4.7 meV, inside the twisted-link range of the original analysis (|J_intra| ≤ 8 meV).
+2. **A second low-energy AFM motif.** run4/free/packmol_1 (S02, ΔE_geom = 66 meV, the lowest-energy dimer after S01) has a dominant AFM AC contact (J_13 = −7.2 meV). It is now the lowest-energy representative of family D, ahead of run2/conf_11 (207 meV).
+3. **A new FM-dominant dimer outside S01.** run4/free/docked_3 (S15, 402 meV) has J_14 = +7.2 meV, as strong as S01 (+5.5 to +5.9 meV) and run2/conf_5 (+7.6 meV). FM-dominant contacts therefore occur in three independent structures (S01, S05 = conf_5, S15).
+4. **Same structure, same magnetism (S07).** The three relaxation variants of run4/docked_4 (free, fixC_double90, fixC_dihedral) are one structural family. After relabelling, all three have the same weak FM AD coupling (+2.2 to +3.0 meV) and AFM intramolecular couplings, and are all in family E. The largest coupling difference between members is 2.16 meV. Constraining the torsions moves the energy by 150–190 meV but does not change the magnetism. With S01, 2 of the 2 structural families that have more than one fitted member now have a single magnetic family.
+5. **Geometry vs magnetism holds on the larger set** (n = 38 fitted dimers, previously 29). |J_13| vs the radical-carbon distance gives ρ = −0.64. In 10 of 10 dimers with one dominant intermolecular pair, that pair is also the closest-contact pair of radical halves. The intramolecular J of the twisted-link molecules still follows the monomer J(P) relation (median deviation 0.79 meV, 42 molecules).
+
+**Updated representatives for orbital analysis** (lowest ΔE_geom per family): A run4/free/docked_1, B run2/conf_7, D **run4/free/packmol_1** (new), E run4/free/docked_4 (new), F run2/conf_39.
+
+---
+
+# Update 2026-11-12: run2 conf_12, 25, 29, 30, 32 recomputed on the reconverged geometry
+
+The broken-symmetry states of these five dimers (all 8 states each, 40 jobs) were rerun after copying the reconverged `geometry.xyz` into every configuration folder. **Check:** in all 40 outputs, the coordinates match the final relaxed structure (`run2/<conf>/high_spin/high_spin.xyz`) with a maximum deviation of 0.0000 Å. The old pre-reconvergence results listed under *Excluded* in the 2026-11-11 update are therefore replaced. `run2_broken_symmetry/relaxation_status.csv` now marks the five dimers as `converged`; the previous version is kept as `relaxation_status_2026-10.csv`. The analysis was rerun with the same scripts. Data: [dimer_families.csv](dimer_families.csv). The previous CSV is [dimer_families_2026-11-11.csv](dimer_families_2026-11-11.csv). The complete regenerated report is [dimer_families_full_2026-11-12.md](dimer_families_full_2026-11-12.md). The plots in `plots/` were overwritten again. Structural families are unchanged (56 families, same labels as on 2026-11-11).
+
+## Coverage
+
+| run | relaxed dimers | converged | with fitted J (10-21 → 11-11 → now) |
+|---|---|---|---|
+| run2 | 39 | 38 | 25 → 27 → 32 |
+| run3 | 9 | 7 | 4 → 4 → 4 |
+| run4 | 18 | 16 | 0 → 7 → 7 |
+
+All five fits are overdetermined (8 states, RMS residual 0.02–0.07 meV). All five keep four stable moments, and their leave-one-out |ΔJ|/max|J| is at most 0.07.
+
+## New assignments
+
+| key | struct_family | ΔE_geom (meV) | magnetic family | J_12 | J_13 | J_14 | J_23 | J_24 | J_34 (meV) | dominant | S_GS |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| run2/conf_25 | S03 | 108.1 | B: dominant FM intermolecular | -1.61 | +0.39 | -1.41 | +7.11 | +0.15 | -2.43 | BC | 0 |
+| run2/conf_32 | S03 | 115.1 | B: dominant FM intermolecular | -1.61 | -1.49 | +0.27 | +0.17 | +6.10 | -2.51 | BD | 0 |
+| run2/conf_29 | S04 | 199.7 | E: competing network | -2.15 | +1.47 | -0.90 | +2.34 | +0.73 | -2.65 | CD | 0 |
+| run2/conf_30 | S08 | 235.2 | E: competing network | -3.21 | -7.66 | -0.16 | -0.02 | +6.32 | -1.02 | AC | 1 |
+| run2/conf_12 | S14 | 376.1 | E: competing network | -4.71 | -0.53 | -0.29 | -7.74 | -0.08 | -4.85 | BC | 0 |
+
+## Updated family counts
+
+| magnetic family | 2026-10-21 | 2026-11-11 | now |
+|---|---|---|---|
+| A: weakly coupled molecules | 1 | 2 | 2 |
+| B: dominant FM intermolecular | 4 | 5 | **7** |
+| D: dominant AFM intermolecular | 4 | 5 | 5 |
+| E: competing network | 5 | 9 | **12** |
+| F: four-spin mapping fails | 20 | 21 | 21 |
+| no BS data | 32 | 24 | 19 |
+
+**No new kind of family appears.** The five dimers fall into B (2) and E (3). Every other dimer keeps the family it had on 2026-11-11.
+
+**Main points**
+
+1. **A second FM motif at low energy (S03).** conf_25 and conf_32 are the same minimum (S03, 108–115 meV above S01, the third-lowest structure overall). Both are dominated by one FM intermolecular contact of +6.1 to +7.1 meV, as strong as S01 (+5.5 to +5.9 meV). The raw pair names differ (BC in conf_25, BD in conf_32), but that is a labelling effect: the optimal superposition maps C↔D. After relabelling, both members have their dominant coupling on BC, and the six couplings agree within 1.0 meV. S03 is therefore a structural family whose magnetism is fully reproducible, like S01 and S07.
+2. **FM-dominant contacts are now found in five independent structures:** S01 (conf_7/27/28), S03 (conf_25/32), S05 (conf_5) and S15 (run4/free/docked_3), plus run2/conf_33 in E (BC +7.2 meV, not dominant enough for B). Below 120 meV, the two lowest structural families with fitted J (S01, S03) are both FM-dominant. The only AFM-dominant dimer in that range is run4/free/packmol_1 (S02, 66 meV).
+3. **conf_30: strong competing FM and AFM contacts.** J_13 = −7.7 meV (AFM) and J_24 = +6.3 meV (FM) act on different radical pairs, so neither dominates (family E). Its ground state is S = 1, one of only two fitted dimers with S_GS = 1; the other is run3/docked_4. conf_12 is AFM on BC (−7.7 meV) but competes with intramolecular couplings of −4.7 to −4.9 meV, and conf_29 is a weak network (all |J| ≤ 2.7 meV).
+4. **Structure predicts magnetism in every family that can test it.** All 3 structural families with more than one fitted member (S01, S03, S07) have a single magnetic family.
+5. **Geometry vs magnetism on 43 fitted dimers.** In 12 of 12 dimers with one dominant intermolecular pair, that pair is also the closest-contact pair of radical halves (10/10 before). The intramolecular J of 52 twisted-link molecules follows the monomer J(P) relation (median deviation 0.72 meV).
+
+**Updated representatives for orbital analysis** (lowest ΔE_geom per family): A run4/free/docked_1, B run2/conf_7 (second motif: run2/conf_25), D run4/free/packmol_1, E **run2/conf_29** (199.7 meV, replaces run4/free/docked_4), F run2/conf_39.
+
+**Still missing:** run2 conf_3, 20, 24 and 35, whose BS failed for lack of a high-spin reference and `geometry.xyz` on the cluster. run3 docked_4 (7/8) and docked_5 (1/8) are also incomplete.

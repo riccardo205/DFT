@@ -1,0 +1,29 @@
+
+\begin{longtable}{@{}lrrrrrrrl@{}}
+\caption{Pairwise exchange couplings of the run4 dimers (meV), from a least-squares fit of the
+         broken-symmetry energies to $\hat H = -\sum_{i<j} J_{ij}\,\hat S_i\cdot\hat S_j$ ($S=\tfrac12$ per
+         radical), mapped as $E_k=E_0-\tfrac14\sum_{i<j}J_{ij}\sigma_i^{(k)}\sigma_j^{(k)}$; $J>0$ ferromagnetic,
+         $J<0$ antiferromagnetic. Sites 1--4 are radicals A--D; $J_{12}$ and $J_{34}$ are intramolecular,
+         the other four intermolecular. ``rms'' is the fit residual (8 configurations, one
+         redundant: a measure of non-pairwise terms); ``exact'' = 7 configurations, no check.
+         $^{\dagger}$: relaxation of the dimer geometry not converged. $^{\S}$: strong coupling
+         ($|J|>50$\,meV, or high-spin radical spins deviating from 1): the broken-symmetry
+         spins are far from $\pm1$ and these couplings are only qualitative.}\label{tab:run4_exchange}\\
+\toprule
+Dimer & $J_{12}$ & $J_{13}$ & $J_{14}$ & $J_{23}$ & $J_{24}$ & $J_{34}$ & rms (meV) & fit \\
+\midrule
+\endfirsthead
+\toprule
+Dimer & $J_{12}$ & $J_{13}$ & $J_{14}$ & $J_{23}$ & $J_{24}$ & $J_{34}$ & rms (meV) & fit \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+fixC\_dihedral/docked\_4 & -1.715 & +0.138 & +2.776 & +0.134 & +0.375 & -2.531 & 0.0307 & 8 conf. \\
+fixC\_double90/docked\_4 & -1.976 & +0.388 & +3.029 & +0.203 & +0.692 & -2.191 & 0.0522 & 8 conf. \\
+free/docked\_1 & -2.923 & -0.471 & +0.500 & +0.380 & -0.494 & -2.870 & 0.0379 & 8 conf. \\
+free/docked\_3 & -2.413 & +0.158 & +7.200 & +0.177 & -0.821 & -2.726 & 0.0071 & 8 conf. \\
+free/docked\_4 & -2.734 & +0.415 & +2.216 & +0.163 & +0.736 & -4.694 & 0.0061 & 8 conf. \\
+free/packmol\_1 & -3.232 & -7.182 & +0.362 & -0.667 & -1.139 & -2.807 & 0.0332 & 8 conf. \\
+free/packmol\_2 & -2.796 & -0.101 & +1.129 & +0.062 & +0.202 & -2.648 & 0.0212 & 8 conf. \\
+\end{longtable}

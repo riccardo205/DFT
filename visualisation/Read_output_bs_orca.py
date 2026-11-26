@@ -53,10 +53,18 @@ import exchange_convention as XC  # noqa: E402
 # USER SETTINGS
 # =========================
 REPO_ROOT = Path(__file__).resolve().parent.parent
-RUNS = ["run2", "run3"]
+RUNS = ["run2", "run3", "run4"]
 DIMERS_ROOT = REPO_ROOT / "runs" / "orca" / "short-2OS" / "dimers_run2"
 OUT_CSV_ROOT = REPO_ROOT / "visualisation" / "output" / "orca" / "dimers_run2"
 OUT_TEX_ROOT = REPO_ROOT / "visualisation" / "latex_tables" / "orca" / "dimers_run2"
+# magnetic families of analyze_dimer_families.py (read if present; run that script after this one to refresh them)
+FAMILIES_CSV = OUT_CSV_ROOT / "families" / "dimer_families.csv"
+SUMMARY_TEX = OUT_TEX_ROOT / "bs_summary_all_runs.tex"     # all runs, one row per fitted dimer, by relaxation energy
+SUMMARY_CSV = OUT_CSV_ROOT / "bs_summary_all_runs.csv"
+# summary-table family of each analyze_dimer_families.py letter: (letter in the table, label, colour)
+FAMILY_STYLE = {"B": ("A", "FM", "B03A2E"), "D": ("B", "AFM", "1F4E79"), "E": ("C", "Network", "6C3483"),
+                "A": ("D", "Weak", "1E7F5C"), "F": ("F", "Unmapped", "7F7F7F")}
+SET_TAG = {"free": "f", "fixC_dihedral": "dh", "fixC_double90": "d90"}   # run4 relaxation sets
 
 HARTREE_TO_MEV = XC.HARTREE_TO_MEV
 RADICALS = "ABCD"                                   # sites 1..4
@@ -157,28 +165,31 @@ def process_run(run):
 
     e_rows, j_rows = [], []
     for stage_dir in sorted(p for p in bs_root.iterdir() if p.is_dir()):
-        for dimer_dir in sorted((p for p in stage_dir.iterdir() if p.is_dir()), key=lambda p: natural_key(p.name)):
+        # dimer folders = folders holding a uuuu configuration (run4 nests them as <set>/<dimer>)
+        dimer_dirs = {p.parent for p in stage_dir.rglob("uuuu") if p.is_dir()}
+        for dimer_dir in sorted(dimer_dirs, key=lambda p: natural_key(p.relative_to(stage_dir).as_posix())):
+            dimer = dimer_dir.relative_to(stage_dir).as_posix()
             frag_file = dimer_dir / "radical_fragments.json"
             fragments = json.loads(frag_file.read_text())["fragments"] if frag_file.exists() else {}
             kinds = {}
             f4 = dimer_dir / "fragments4.json"
             if f4.exists():
                 kinds = {k: re.sub(r"M\d-", "", v) for k, v in json.loads(f4.read_text()).get("json_label_to_half", {}).items()}
-            relax = relax_status.get(dimer_dir.name, "") if stage_dir.name == "relaxed" else "initial geometry"
+            relax = relax_status.get(dimer, "") if stage_dir.name == "relaxed" else "initial geometry"
 
             rows = [parse_config(dimer_dir / c, fragments) for c in CONFIGS if (dimer_dir / c).is_dir()]
             if not any(r["status"] == "done" for r in rows):
                 continue
             e_ref = next((r["E_Eh"] for r in rows if r["config"] == "uuuu" and r["status"] == "done"), np.nan)
             for r in rows:
-                r.update({"stage": stage_dir.name, "dimer": dimer_dir.name, "relaxation": relax})
+                r.update({"stage": stage_dir.name, "dimer": dimer, "relaxation": relax})
                 if r["status"] == "done":
                     r["E_minus_uuuu_meV"] = (r["E_Eh"] - e_ref) * HARTREE_TO_MEV
                 e_rows.append(r)
 
             usable = {r["config"]: r["E_Eh"] for r in rows if r["status"] == "done" and r["used_in_fit"]}
             fit = fit_exchange(usable)
-            jr = {"stage": stage_dir.name, "dimer": dimer_dir.name, "relaxation": relax,
+            jr = {"stage": stage_dir.name, "dimer": dimer, "relaxation": relax,
                   "n_configs_done": sum(r["status"] == "done" for r in rows),
                   "n_configs_in_fit": fit["n_configs"], "fit": fit["quality"]}
             for p in PAIRS:
@@ -186,7 +197,7 @@ def process_run(run):
             jr.update({"rms_residual_meV": fit["rms"], "max_residual_meV": fit["max_res"],
                        "E0_Eh": fit["E0_Eh"], "residual_norm_meV": fit["residual_norm"], "rank": fit["rank"],
                        "E_lower_Eh": min((usable[c] for c in fit["residuals"]), default=np.nan),
-                       "F_lower_eV_A": relaxation_max_force(run, stage_dir.name, dimer_dir.name)})
+                       "F_lower_eV_A": relaxation_max_force(run, stage_dir.name, dimer)})
             for r in RADICALS:
                 jr[f"kind_{r}"] = kinds.get(r, "")
             uuuu = next((r for r in rows if r["config"] == "uuuu" and r["status"] == "done"), None)
@@ -201,7 +212,7 @@ def process_run(run):
             for c, v in fit["residuals"].items():
                 next(x for x in rows if x["config"] == c)["fit_residual_meV"] = v
             j_rows.append(jr)
-            print(f"  {stage_dir.name}/{dimer_dir.name:10s} done {jr['n_configs_done']}/8, in fit {fit['n_configs']}, "
+            print(f"  {stage_dir.name}/{dimer:10s} done {jr['n_configs_done']}/8, in fit {fit['n_configs']}, "
                   f"fit: {fit['quality']}" + (f", rms {fit['rms']:.4f} meV" if fit["quality"] == "overdetermined" else "")
                   + (f"   wrong pattern: {jr['wrong_pattern_configs']}" if jr["wrong_pattern_configs"] else "")
                   + (f"   |spin|<0.5: {jr['weak_moment_configs']}" if jr["weak_moment_configs"] else ""))
@@ -311,7 +322,87 @@ def write_siesta_style_csv(jdf, path):
     pd.DataFrame(rows).to_csv(path, index=False)
 
 
+def short_name(run, dimer):
+    """run2/conf_7 -> 2_c7, run3/docked_4 -> 3_d4, run4/free/packmol_1 -> 4f_p1."""
+    *sets, name = dimer.split("/")
+    m = re.fullmatch(r"([a-z])[a-z]*_(\d+)", name)
+    tag = "".join(SET_TAG.get(x, x) for x in sets)
+    return f"{run.removeprefix('run')}{tag}_" + (f"{m.group(1)}{m.group(2)}" if m else name)
+
+
+def ground_config(cfg):
+    """BS label with radical A up (dduu -> uudd): a configuration and its global spin reverse are the same state."""
+    return cfg if cfg[0] == "u" else cfg.translate(str.maketrans("ud", "du"))
+
+
+def write_summary(all_e, all_j, tex_path, csv_path):
+    """One row per fitted dimer of all runs, by ascending r2SCAN-3c relaxation energy (relative to the lowest)."""
+    fam = pd.read_csv(FAMILIES_CSV).set_index("key") if FAMILIES_CSV.exists() else pd.DataFrame()
+    J = pd.concat(all_j, ignore_index=True)
+    E = pd.concat(all_e, ignore_index=True)
+    J = J[(J["fit"] != "insufficient") & (J["stage"] == "relaxed")].copy()
+    ok = E[(E["status"] == "done") & (E["used_in_fit"] == True)]  # noqa: E712
+    gs = ok.loc[ok.groupby(["run", "dimer"])["E_Eh"].idxmin()].set_index(["run", "dimer"])["config"]
+    J["key"] = J["run"] + "/" + J["dimer"]
+    J["name"] = [short_name(r, d) for r, d in zip(J["run"], J["dimer"])]
+    J["ground_state"] = [ground_config(gs[(r, d)]) for r, d in zip(J["run"], J["dimer"])]
+    # PBE0 single points have no dispersion: rank by the r2SCAN-3c (D4) relaxation energy of the dimer instead
+    J["E_relax_Eh"] = [fam["E_Eh"].get(k, np.nan) if len(fam) else np.nan for k in J["key"]]
+    J["dE_meV"] = (J["E_relax_Eh"] - J["E_relax_Eh"].min()) * HARTREE_TO_MEV
+    J["dE_BS_PBE0_meV"] = (J["E_lower_Eh"] - J["E_lower_Eh"].min()) * HARTREE_TO_MEV
+    J["mag_family"] = [fam["mag_family"].get(k, "") if len(fam) else "" for k in J["key"]]
+    J["constrained"] = [len(fam) > 0 and "constrained" in str(fam["relaxation"].get(k, "")) for k in J["key"]]
+    J = J.sort_values("dE_meV")
+    cols = ["key", "name", "mag_family", "dE_meV", "ground_state"] + [f"J_{p}_meV" for p in PAIRS] + \
+           ["rms_residual_meV", "fit", "regime", "constrained", "relaxation", "E_relax_Eh", "dE_BS_PBE0_meV"]
+    J["family"] = [FAMILY_STYLE.get(str(f)[:1], ("", "", ""))[1] for f in J["mag_family"]]
+    J[cols[:2] + ["family"] + cols[2:]].to_csv(csv_path, index=False)
+
+    tex_path.parent.mkdir(parents=True, exist_ok=True)
+    colours = "".join(rf"\definecolor{{fam{lab}}}{{HTML}}{{{c}}}" + "\n" for _, lab, c in FAMILY_STYLE.values())
+    legend = ", ".join(rf"\textcolor{{fam{lab}}}{{\textbf{{{lab}}}}} ({k})" for k, lab, _ in sorted(FAMILY_STYLE.values()))
+    head = (r"Dimer & Family & $\Delta E$ & GS & " + " & ".join(f"$J_{{{p}}}$" for p in PAIRS)
+            + r" & rms \\")
+    with tex_path.open("w", encoding="utf-8") as tex:
+        tex.write("% needs \\usepackage{longtable,booktabs,xcolor}\n" + colours + r"""{\footnotesize
+\setlength{\LTleft}{0pt}\setlength{\LTright}{0pt}
+\begin{longtable}{@{\extracolsep{\fill}}llrl""" + "r" * len(PAIRS) + r"""r@{}}
+\caption{Broken-symmetry results of all fitted dimers, by ascending energy. Dimer: run, relaxation set of
+  run4 (f free, dh / d90 fixed C dihedral / double 90$^\circ$), conformer (c conf, d docked, p packmol).
+  Family: magnetic family (""" + legend + r"""). $\Delta E$: r2SCAN-3c energy of the relaxed dimer relative to
+  the lowest (meV); GS: lowest PBE0 broken-symmetry configuration (spins of radicals A B C D, A up).
+  $J_{ij}$ (meV, $\hat H=-\sum_{i<j}J_{ij}\hat S_i\cdot\hat S_j$, $J>0$ FM): sites 1--4 = radicals A--D,
+  $J_{12}$, $J_{34}$ intramolecular. rms: fit residual of the 8 configurations (meV; ex.\ = exactly
+  determined by 7). $^{c}$ torsion-constrained relaxation;
+  $^{\S}$ strong coupling, couplings only qualitative.}\label{tab:bs_summary_all_runs}\\
+\toprule
+""" + head + r"""
+\midrule
+\endfirsthead
+\toprule
+""" + head + r"""
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+""")
+        for _, r in J.iterrows():
+            _, lab, _ = FAMILY_STYLE.get(str(r["mag_family"])[:1], (None, "--", None))
+            famtex = rf"\textcolor{{fam{lab}}}{{\textbf{{{lab}}}}}" if lab != "--" else "--"
+            mark = (r"$^{c}$" if r["constrained"] else "") + \
+                   (r"$^{\S}$" if str(r["regime"]).startswith("strong") else "") + \
+                   (r"$^{\dagger}$" if r["relaxation"] == "not_converged" else "")
+            rms = fmt(r["rms_residual_meV"], ".3f") if r["fit"] == "overdetermined" else "ex."
+            tex.write(f"{r['name'].replace('_', chr(92) + '_')}{mark} & {famtex} & {fmt(r['dE_meV'], '.0f')} & "
+                      f"{r['ground_state']} & " + " & ".join(fmt(r[f'J_{p}_meV'], '+.2f') for p in PAIRS)
+                      + f" & {rms} \\\\\n")
+        tex.write(r"\end{longtable}}" + "\n")
+    print(f"=== summary: {len(J)} fitted dimers of {', '.join(RUNS)} -> {tex_path}, {csv_path}"
+          + ("" if len(fam) else f"   [!] {FAMILIES_CSV} missing: no families"))
+
+
 def main():
+    all_e, all_j = [], []
     for run in RUNS:
         print(f"=== {run}_broken_symmetry")
         edf, jdf = process_run(run)
@@ -330,9 +421,13 @@ def main():
         tex_dir = OUT_TEX_ROOT / f"{run}_broken_symmetry"
         write_energy_table(edf, run, tex_dir / f"{run}_bs_energies.tex")
         write_exchange_table(jdf, run, tex_dir / f"{run}_exchange.tex")
+        all_e.append(edf.assign(run=run))
+        all_j.append(jdf.assign(run=run))
         n_fit = int((jdf["fit"] != "insufficient").sum())
         print(f"  {len(jdf)} dimers with results, couplings for {n_fit}")
         print(f"  -> {out_dir}/bs_energies.csv, exchange_couplings.csv, {run}_exchange_4spin.csv\n  -> {tex_dir}/")
+    if all_j:
+        write_summary(all_e, all_j, SUMMARY_TEX, SUMMARY_CSV)
 
 
 if __name__ == "__main__":
