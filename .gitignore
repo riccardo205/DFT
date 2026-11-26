@@ -9,3 +9,8 @@ orca_test
 
 # orbital cube files (large, regenerated with orca_plot)
 *.cube
+# large SIESTA binary outputs and archives (kept on disk, not in git)
+*.nc
+*.HSX
+*.DM
+*.zip
